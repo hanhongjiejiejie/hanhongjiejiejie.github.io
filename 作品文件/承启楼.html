@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>承启楼 | 数字孪生可视化系统</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      width: 100vw;
+      height: 100vh;
+      overflow: hidden;
+      font-family: "KaiTi", "Microsoft YaHei", "Segoe UI", "PingFang SC", sans-serif;
+      /* 主背景：更亮的土黄 + 青灰渐变，提升亮度 */
+      background: linear-gradient(125deg, #f5e8c4 0%, #e2d0a5 35%, #a6b390 100%);
+      position: relative;
+    }
+
+    /* 1. 动态鎏金网格纹理（更密集、更明显） */
+    body::before {
+      content: "";
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      top: 0;
+      left: 0;
+      background-image: 
+        linear-gradient(rgba(212, 175, 55, 0.35) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(212, 175, 55, 0.35) 1px, transparent 1px);
+      background-size: 40px 40px;
+      pointer-events: none;
+      z-index: 0;
+      animation: gridFlow 25s linear infinite;
+    }
+
+    @keyframes gridFlow {
+      0% { background-position: 0 0; }
+      100% { background-position: 40px 40px; }
+    }
+
+    /* 2. 宣纸颗粒纹理（增强质感，更亮） */
+    body::after {
+      content: "";
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      top: 0;
+      left: 0;
+      background-image: radial-gradient(circle at 20% 30%, rgba(220, 200, 150, 0.2) 1.5px, transparent 1.5px);
+      background-size: 24px 24px;
+      pointer-events: none;
+      z-index: 0;
+      opacity: 0.8;
+    }
+
+    /* 3. 暖白 + 鎏金流光晕染（增强亮度） */
+    .glow-overlay {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      top: 0;
+      left: 0;
+      background: radial-gradient(circle at 50% 40%, rgba(255, 250, 210, 0.5) 0%, rgba(212, 175, 55, 0.2) 60%, transparent 90%);
+      animation: gentleGlow 7s ease-in-out infinite;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    @keyframes gentleGlow {
+      0% { opacity: 0.6; transform: scale(1); }
+      50% { opacity: 1; transform: scale(1.02); }
+      100% { opacity: 0.6; transform: scale(1); }
+    }
+
+    .dashboard {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      padding: 12px;
+      gap: 12px;
+      position: relative;
+      z-index: 2;
+    }
+
+    /* 面板：暖白半透玻璃 + 鎏金边框，亮色风格，更通透 */
+    .left-panel, .right-panel, .center-panel {
+      background: rgba(255, 252, 240, 0.82);
+      backdrop-filter: blur(12px);
+      border: 1px solid #e6c87a;
+      border-radius: 24px;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08), inset 0 1px 0 rgba(255, 248, 210, 0.9);
+      transition: all 0.3s;
+    }
+
+    .left-panel {
+      width: 26%;
+      height: 100%;
+      padding: 8px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .chart-item:first-child {
+      height: 46%;
+      width: 100%;
+      overflow: hidden;
+      border-radius: 18px;
+      display: flex;
+      flex-direction: column;
+      padding: 0 !important;
+    }
+
+    .chart-item:last-child {
+      height: calc(54% - 12px);
+      width: 100%;
+      overflow: hidden;
+      border-radius: 18px;
+      display: flex;
+      flex-direction: column;
+      padding: 0 !important;
+    }
+
+    .panel-title {
+      color: #8b6946;
+      font-size: 16px;
+      margin-bottom: 6px;
+      padding-left: 12px;
+      border-left: 4px solid #e6b422;
+      font-weight: bold;
+      text-shadow: 0 0 2px rgba(230, 180, 34, 0.4);
+      letter-spacing: 1px;
+      flex-shrink: 0;
+      font-family: "Microsoft YaHei", "KaiTi", monospace;
+    }
+
+    .chart-container {
+      flex: 1;
+      width: 100%;
+      border: none;
+      background: transparent;
+      height: 100% !important;
+    }
+
+    .flourish-embed {
+      height: 100% !important;
+      width: 100% !important;
+    }
+
+    .center-panel {
+      flex: 1;
+      height: 100%;
+      overflow: hidden;
+      position: relative;
+      border-radius: 24px;
+      background: rgba(252, 248, 235, 0.7);
+    }
+
+    #dtsFrame {
+      width: 100%;
+      height: 100%;
+      border: none;
+    }
+
+    .right-panel {
+      width: 20%;
+      height: 100%;
+      padding: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .right-top {
+      height: calc(50% - 6px);
+      display: flex;
+      flex-direction: column;
+    }
+    .right-bottom {
+      height: calc(50% - 6px);
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* 鎏金滚动条 */
+    .info-content::-webkit-scrollbar,
+    .chart-container::-webkit-scrollbar {
+      width: 4px;
+    }
+    .info-content::-webkit-scrollbar-thumb,
+    .chart-container::-webkit-scrollbar-thumb {
+      background: #e6b422;
+      border-radius: 4px;
+    }
+    .info-content::-webkit-scrollbar-track,
+    .chart-container::-webkit-scrollbar-track {
+      background: rgba(230, 180, 34, 0.2);
+    }
+
+    /* 隐藏 Flourish 自带水印 */
+    .flourish-embed__credit,
+    [class*="credit"] {
+      display: none !important;
+      opacity: 0 !important;
+      visibility: hidden !important;
+    }
+
+    iframe {
+      background: transparent;
+    }
+  </style>
+</head>
+
+<body>
+  <!-- 独立光晕层，增强亮度动态 -->
+  <div class="glow-overlay"></div>
+
+  <div class="dashboard">
+
+    <!-- 左侧：承启楼数据分析 + 客家人口规模统计 -->
+    <div class="left-panel">
+      <div class="chart-item">
+        <div class="panel-title">⚡ 承启楼数据分析</div>
+        <div class="chart-container">
+          <div class="flourish-embed flourish-chart" data-src="visualisation/28353595">
+            <script src="https://public.flourish.studio/resources/embed.js"></script>
+          </div>
+        </div>
+      </div>
+
+      <div class="chart-item">
+        <div class="panel-title">📊 客家人口规模统计</div>
+        <div class="chart-container">
+          <div class="flourish-embed flourish-chart" data-src="visualisation/28346150">
+            <script src="https://public.flourish.studio/resources/embed.js"></script>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 中间：DTS 3D 交互模型 -->
+    <div class="center-panel">
+      <iframe id="dtsFrame" src="http://172.20.1.148:8080/locale/zh/player.html?scene=承启楼Vr&flyto=承启楼Vr"></iframe>
+    </div>
+
+    <!-- 右侧：游客浏览量 + 功能分布 -->
+    <div class="right-panel">
+      <div class="right-top">
+        <div class="panel-title">👥 游客浏览量趋势</div>
+        <div class="chart-container">
+          <div class="flourish-embed flourish-chart" data-src="visualisation/28423537">
+            <script src="https://public.flourish.studio/resources/embed.js"></script>
+          </div>
+        </div>
+      </div>
+
+      <div class="right-bottom">
+        <div class="panel-title">🏛️ 功能分布图谱</div>
+        <div class="chart-container">
+          <div class="flourish-embed flourish-chart" data-src="visualisation/28390415">
+            <script src="https://public.flourish.studio/resources/embed.js"></script>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+</body>
+</html>

@@ -1,0 +1,754 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>名镇聚落 · 古韵遗风 | 国风核密度分析</title>
+  
+  <!-- 高德地图 JS API 2.0 -->
+  <script type="text/javascript" src="https://webapi.amap.com/maps?v=2.0&key=715e7832cec7a61241370d7e43fc3f85"></script>
+  
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      /* 翠绿水墨基调：石绿 → 黛青 → 松烟墨色 */
+      background: radial-gradient(ellipse at 40% 45%, #3f7864 0%, #2a5a4a 45%, #1d3b2f 80%, #10261d 100%);
+      position: relative;
+      font-family: 'Georgia', '宋体', 'KaiTi', '华文楷书', 'Microsoft YaHei', serif;
+    }
+
+    /* ========= 水墨晕染 & 祥云纹理 ========= */
+    body::before {
+      content: "";
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 0;
+      background: url("https://haowallpaper.com/link/common/file/getCroppingImg/17084667455524224") center center / cover no-repeat;
+      filter: brightness(0.9) contrast(1.05);
+      opacity: 0.95;
+    }
+
+    /* 暖金流雾 (柔光) */
+    body::after {
+      content: "";
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 0;
+      background: radial-gradient(circle at 70% 30%, rgba(212, 175, 55, 0.06) 0%, transparent 50%),
+                  linear-gradient(110deg, rgba(180, 145, 60, 0.05) 0%, rgba(0,0,0,0) 60%);
+    }
+
+    /* ========= 国风顶部横栏：庄严棕色 + 朱砂红点缀 + 暖金，完全平铺 ========= */
+    .top-bar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      width: 100%;
+      height: 70px;
+      /* 庄严棕色主色调，厚重温润 */
+      background: #4a2c1a;
+      backdrop-filter: blur(4px);
+      background-image: radial-gradient(circle at 20% 40%, rgba(255, 215, 140, 0.08) 2%, transparent 2.5%),
+                        radial-gradient(circle at 85% 70%, rgba(200, 150, 80, 0.06) 1.5%, transparent 2%);
+      background-size: 32px 32px, 28px 28px;
+      border-radius: 0;      /* 完全平铺无圆角 */
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 215, 150, 0.25);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 28px;
+      z-index: 10000;
+      /* 边框：朱砂红 + 暖金双色，底部边框 */
+      border-bottom: 2px solid #c23b22;
+      border-top: none;
+      transition: all 0.3s;
+    }
+
+    .top-bar .title {
+      font-size: 26px;
+      font-weight: 500;
+      letter-spacing: 4px;
+      /* 暖金色渐变，在深色背景上突出 */
+      background: linear-gradient(135deg, #f7e5b5, #e6b422);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+      position: relative;
+      padding-left: 20px;
+    }
+
+    .top-bar .title::before {
+      content: "🏮";
+      position: absolute;
+      left: -12px;
+      top: -2px;
+      font-size: 28px;
+      filter: drop-shadow(0 0 2px #c23b22);
+    }
+
+    .nav-group {
+      display: flex;
+      gap: 16px;
+    }
+
+    .nav-btn {
+      padding: 8px 22px;
+      border: none;
+      border-radius: 40px;
+      background: rgba(245, 235, 210, 0.2);
+      color: #f7e5c2;
+      cursor: pointer;
+      font-size: 16px;
+      font-family: inherit;
+      font-weight: 500;
+      transition: all 0.25s;
+      backdrop-filter: blur(4px);
+      border: 1px solid #e6b422;
+      letter-spacing: 2px;
+    }
+
+    .nav-btn.active {
+      background: #831a0a;   /* 朱砂红 */
+      color: #fff8eb;
+      border-color: #f3d572;
+      box-shadow: 0 2px 10px rgba(194, 59, 34, 0.5);
+      font-weight: bold;
+    }
+
+    .nav-btn:hover:not(.active) {
+      background: #e6b422;   /* 暖金 */
+      color: #2f2e1f;
+      border-color: #c23b22;
+      transform: translateY(-2px);
+    }
+
+    /* ========= 地图容器：横向铺开，无圆角视口，紧贴横栏下方 ========= */
+    .map-card {
+      position: fixed;
+      top: 70px;       /* 紧贴顶部栏下方，横栏高度70px */
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.08);
+      backdrop-filter: blur(0px);
+      box-shadow: none;
+      z-index: 1;
+      overflow: hidden;
+      border-radius: 0;
+      border: none;
+    }
+
+    #viewDiv {
+      width: 100%;
+      height: 100%;
+      background: transparent;
+      border-radius: 0;
+    }
+
+    /* 高德地图控件微调 (避免遮挡) */
+    .amap-control-toolbar {
+      margin-left: 16px !important;
+      margin-bottom: 20px !important;
+    }
+    .amap-scalecontrol {
+      margin-left: 12px !important;
+      margin-bottom: 20px !important;
+    }
+
+    /* ========= 国风弹窗 (雅致民居) ========= */
+    #popup {
+      position: fixed;
+      top: 90px;
+      right: 28px;
+      width: 340px;
+      background: #fef7e8;
+      background: linear-gradient(145deg, #fef5e6, #f7ebd4);
+      border-radius: 28px 12px 28px 12px;
+      box-shadow: 0 12px 28px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 245, 210, 0.9);
+      padding: 18px 20px 22px;
+      display: none;
+      z-index: 10001;
+      border-left: 6px solid #c23b22;
+      border-bottom: 2px solid #e6b422;
+      font-family: 'KaiTi', 'Georgia', serif;
+    }
+
+    #closePopup {
+      position: absolute;
+      top: 12px;
+      right: 18px;
+      font-size: 26px;
+      font-weight: normal;
+      cursor: pointer;
+      color: #7a5a3a;
+      transition: 0.2s;
+      line-height: 1;
+    }
+
+    #closePopup:hover {
+      color: #c0342c;
+      transform: scale(1.1);
+    }
+
+    #popup img {
+      width: 100%;
+      height: 160px;
+      object-fit: cover;
+      border-radius: 20px 8px 20px 8px;
+      margin-bottom: 12px;
+      border: 1px solid #dbba87;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    #pointName {
+      font-weight: bold;
+      font-size: 20px;
+      color: #442f1f;
+      border-left: 4px solid #c23b22;
+      padding-left: 12px;
+      margin: 8px 0 8px;
+      letter-spacing: 1px;
+    }
+
+    #popup p {
+      margin: 8px 0;
+      font-size: 13px;
+      color: #3a2a1c;
+      line-height: 1.45;
+    }
+
+    #introText {
+      font-style: italic;
+      color: #8b6946;
+      border-top: 1px dashed #ddc8a5;
+      padding-top: 8px;
+      margin-top: 10px;
+    }
+
+    /* 文化水印 (名镇主题) */
+    .heritage-watermark {
+      position: fixed;
+      bottom: 20px;
+      left: 28px;
+      z-index: 99;
+      font-size: 13px;
+      color: rgba(230, 210, 130, 0.85);
+      background: rgba(15, 25, 18, 0.55);
+      backdrop-filter: blur(5px);
+      padding: 6px 16px;
+      border-radius: 40px;
+      letter-spacing: 2px;
+      font-family: 'KaiTi', serif;
+      pointer-events: none;
+      border-left: 2px solid #e6b422;
+      font-weight: 300;
+    }
+
+    .heritage-watermark strong {
+      color: rgba(240, 210, 100, 0.95);
+      font-weight: normal;
+    }
+
+    /* 名镇印章 */
+    .chop-seal {
+      position: fixed;
+      bottom: 28px;
+      right: 30px;
+      z-index: 99;
+      width: 64px;
+      height: 64px;
+      opacity: 0.65;
+      background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><polygon points="20,20 80,20 80,80 20,80" fill="none" stroke="%23e6b422" stroke-width="2.8" stroke-dasharray="3 3"/><text x="50" y="68" font-size="18" text-anchor="middle" fill="%23e6b422" font-family="KaiTi" font-weight="bold">名镇</text><text x="50" y="88" font-size="12" text-anchor="middle" fill="%23e6b422" font-family="KaiTi">古韵</text></svg>');
+      background-size: contain;
+      pointer-events: none;
+    }
+
+    /* 响应式适配 */
+    @media (max-width: 700px) {
+      .top-bar { padding: 0 16px; height: 58px; }
+      .top-bar .title { font-size: 18px; }
+      .nav-btn { padding: 5px 14px; font-size: 13px; }
+      .map-card { top: 58px; }
+      #popup { width: 280px; right: 12px; top: 80px; padding: 12px; }
+      #pointName { font-size: 18px; }
+      .heritage-watermark { font-size: 10px; bottom: 12px; left: 12px; }
+      .chop-seal { width: 48px; height: 48px; bottom: 16px; right: 16px; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="top-bar">
+    <div class="title">历史文化名镇 · 古韵遗风</div>
+    <div class="nav-group">
+      <button class="nav-btn" onclick="location.href='古城.html'">古城</button>
+      <button class="nav-btn active" onclick="location.href='古镇.html'">古镇</button>
+      <button class="nav-btn" onclick="location.href='古村.html'">古村</button>
+    </div>
+  </div>
+
+  <div class="map-card">
+    <div id="viewDiv"></div>
+  </div>
+
+  <div id="popup">
+    <span id="closePopup">✕</span>
+    <img id="popupImg" alt="古镇风貌" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%23e9dbc6'/%3E%3Ctext x='50' y='55' font-size='14' text-anchor='middle' fill='%238a6e48'%3E传统古镇%3C/text%3E%3C/svg%3E">
+    <p id="pointName" style="font-weight:bold; font-size:16px;"></p>
+    <p id="pointType"></p>
+    <p id="pointProvince"></p>
+    <p id="pointCity"></p>
+    <p id="pointCoord"></p>
+    <p id="introText"></p>
+  </div>
+
+  <div class="heritage-watermark">
+    🏮 国家级历史文化名镇 · 千年古镇
+  </div>
+  <div class="chop-seal"></div>
+
+<script>
+AMap.plugin(['AMap.Scale', 'AMap.ToolBar', 'AMap.HeatMap'], function() {
+  // 地图初始化 —— 标准中国底图，横向铺开无圆角
+  const map = new AMap.Map('viewDiv', {
+    zoom: 4,
+    center: [104.0, 36.0],
+    resizeEnable: true,
+    mapStyle: 'amap://styles/normal',
+    showLabel: true,
+    layers: [new AMap.TileLayer()]
+  });
+
+  // 控件
+  map.addControl(new AMap.Scale({ position: 'LB' }));
+  map.addControl(new AMap.ToolBar({ position: 'LB', offset: new AMap.Pixel(12, 28) }));
+
+  // 弹窗元素绑定
+  const popup = document.getElementById("popup");
+  const pointName = document.getElementById("pointName");
+  const pointType = document.getElementById("pointType");
+  const pointProvince = document.getElementById("pointProvince");
+  const pointCity = document.getElementById("pointCity");
+  const pointCoord = document.getElementById("pointCoord");
+  const introText = document.getElementById("introText");
+  const closePopupBtn = document.getElementById("closePopup");
+  const popupImg = document.getElementById("popupImg");
+
+  // 展示古镇详情 (国风样式)
+  function showPopup(item) {
+    pointName.innerText = item.name;
+    pointType.innerText = "🏮 类型：国家级历史文化名镇";
+    pointProvince.innerText = "📍 省份：" + item.province;
+    pointCity.innerText = "🏯 城市：" + item.city;
+    pointCoord.innerText = `🗺 经纬度：${item.longitude.toFixed(4)} / ${item.latitude.toFixed(4)}`;
+    introText.innerText = "🏘 千年古镇 · 商贾云集，青石板路承载百年历史文脉。";
+    
+    popupImg.src = `data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpath fill='%23dccfaa' d='M20,40 L50,18 L80,40 L80,80 L20,80 Z'/%3E%3Crect x='38' y='58' width='24' height='22' fill='%23b87c4f'/%3E%3Ccircle cx='50' cy='45' r='9' fill='%23ffd700'/%3E%3Ctext x='50' y='92' font-size='8' fill='%235a3e28' text-anchor='middle'%3E古镇意象%3C/text%3E%3C/svg%3E`;
+    popup.style.display = "block";
+  }
+
+  // 黄色古镇图标 (你要求的黄色)
+  function createClassicIcon() {
+    const svg = `<svg width="24" height="24" viewBox="0 0 26 26" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="13" cy="13" r="10" fill="#ffd700" stroke="#e6b422" stroke-width="1.2" stroke-dasharray="2 2"/>
+      <circle cx="13" cy="13" r="4.5" fill="#2c2418" opacity="0.85"/>
+      <path d="M13 6 L13 20 M6 13 L20 13" stroke="#f5e7c2" stroke-width="1.2" opacity="0.7"/>
+      <path d="M9 9 L17 17 M17 9 L9 17" stroke="#f7e3b0" stroke-width="0.8" opacity="0.5"/>
+    </svg>`;
+    const url = 'data:image/svg+xml;base64,' + btoa(unescape(encodeURIComponent(svg)));
+    return new AMap.Icon({ size: new AMap.Size(26, 26), image: url, imageSize: new AMap.Size(26, 26) });
+  }
+  const classicIcon = createClassicIcon();
+
+  // 批量添加点位
+  function addMarkers(data) {
+    data.forEach(item => {
+      const marker = new AMap.Marker({
+        position: [item.longitude, item.latitude],
+        icon: classicIcon,
+        zIndex: 10,
+        offset: new AMap.Pixel(-13, -13),
+        title: item.name
+      });
+      marker.on('click', () => showPopup(item));
+      marker.setMap(map);
+    });
+  }
+
+  // 核密度热力图
+  function addHeatmap(data) {
+    const heatData = data.map(p => ({
+      lng: p.longitude,
+      lat: p.latitude,
+      count: 1
+    }));
+    const heatmap = new AMap.HeatMap(map, {
+      radius: 52,
+      opacity: [0.2, 0.88],
+      gradient: {
+        0.2: '#2f6b47',
+        0.4: '#5d9b6e',
+        0.6: '#e6b422',
+        0.8: '#c23b22',
+        1.0: '#bc5a2c'
+      },
+      zIndex: 5
+    });
+    heatmap.setDataSet({ data: heatData, max: 12 });
+    heatmap.show();
+  }
+
+  // 古镇数据（完全保留）
+  const townData = [
+   {"name":"山西省灵石县静升镇","province":"山西省","city":"晋中市","longitude":111.874213,"latitude":36.894785},
+{"name":"重庆市潼南县双江镇","province":"重庆市","city":"重庆市","longitude":105.755291,"latitude":30.207633},
+{"name":"江苏省江都市邵伯镇","province":"江苏省","city":"扬州市","longitude":119.519324,"latitude":32.521422},
+{"name":"江苏省海门市余东镇","province":"江苏省","city":"南通市","longitude":121.359819,"latitude":32.013719},
+{"name":"江苏省常熟市沙家浜镇","province":"江苏省","city":"苏州市","longitude":120.805461,"latitude":31.555064},
+{"name":"浙江省仙居县皤滩镇","province":"浙江省","city":"台州市","longitude":120.728733,"latitude":28.846856},
+{"name":"浙江省永嘉县岩头镇","province":"浙江省","city":"温州市","longitude":120.73556,"latitude":28.338988},
+{"name":"浙江省富阳市龙门镇","province":"浙江省","city":"杭州市","longitude":119.944178,"latitude":29.905877},
+{"name":"浙江省德清县新市镇","province":"浙江省","city":"湖州市","longitude":120.26462,"latitude":30.608055},
+{"name":"安徽省歙县许村镇","province":"安徽省","city":"黄山市","longitude":118.322561,"latitude":29.993606},
+{"name":"安徽省休宁县万安镇","province":"安徽省","city":"黄山市","longitude":118.211613,"latitude":29.789989},
+{"name":"安徽省宣城市宣州区水东镇","province":"安徽省","city":"宣城市","longitude":118.965199,"latitude":30.791718},
+{"name":"河北省蔚县暖泉镇","province":"河北省","city":"张家口市","longitude":114.451509,"latitude":39.809783},
+{"name":"福建省永泰县嵩口镇","province":"福建省","city":"福州市","longitude":118.595189,"latitude":25.800126},
+{"name":"江西省横峰县葛源镇","province":"江西省","city":"上饶市","longitude":117.669738,"latitude":28.598212},
+{"name":"山东省桓台县新城镇","province":"山东省","city":"淄博市","longitude":117.961743,"latitude":36.958995},
+{"name":"河南省开封县朱仙镇","province":"河南省","city":"开封市","longitude":114.267584,"latitude":34.615601},
+{"name":"河南省郑州市惠济区古荥镇","province":"河南省","city":"郑州市","longitude":113.536465,"latitude":34.879893},
+{"name":"河南省确山县竹沟镇","province":"河南省","city":"驻马店市","longitude":113.729208,"latitude":32.789444},
+{"name":"湖北省咸宁市汀泗桥镇","province":"湖北省","city":"咸宁市","longitude":114.180039,"latitude":29.815482},
+{"name":"湖北省阳新县龙港镇","province":"湖北省","city":"黄石市","longitude":114.955431,"latitude":29.617308},
+{"name":"湖北省宜都市枝城镇","province":"湖北省","city":"宜昌市","longitude":111.500774,"latitude":30.297791},
+{"name":"湖南省望城县靖港镇","province":"湖南省","city":"长沙市","longitude":112.74789,"latitude":28.4422},
+{"name":"山西省临县碛口镇","province":"山西省","city":"吕梁市","longitude":110.742743,"latitude":37.691056},
+{"name":"湖南省永顺县芙蓉镇","province":"湖南省","city":"湘西土家族苗族自治州","longitude":110.037199,"latitude":28.828716},
+{"name":"广东省东莞市石龙镇","province":"广东省","city":"东莞市","longitude":113.857569,"latitude":23.106755},
+{"name":"广东省惠州市惠阳区秋长镇","province":"广东省","city":"惠州市","longitude":114.416276,"latitude":22.798374},
+{"name":"广东省普宁市洪阳镇","province":"广东省","city":"揭阳市","longitude":116.218591,"latitude":23.432596},
+{"name":"海南省儋州市中和镇","province":"海南省","city":"儋州市","longitude":109.3521,"latitude":19.743866},
+{"name":"海南省文昌市铺前镇","province":"海南省","city":"[]","longitude":110.580002,"latitude":20.023731},
+{"name":"海南省定安县定城镇","province":"海南省","city":"[]","longitude":110.368432,"latitude":19.680292},
+{"name":"重庆市九龙坡区走马镇","province":"重庆市","city":"重庆市","longitude":106.288482,"latitude":29.457499},
+{"name":"重庆市巴南区丰盛镇","province":"重庆市","city":"重庆市","longitude":106.934695,"latitude":29.521961},
+{"name":"重庆市铜梁县安居镇","province":"重庆市","city":"重庆市","longitude":106.029723,"latitude":29.988144},
+{"name":"辽宁省新宾满族自治县永陵镇","province":"辽宁省","city":"抚顺市","longitude":124.832479,"latitude":41.7115},
+{"name":"重庆市永川区松溉镇","province":"重庆市","city":"重庆市","longitude":105.894023,"latitude":29.055986},
+{"name":"四川省巴中市巴州区恩阳镇","province":"四川省","city":"巴中市","longitude":106.76887,"latitude":31.851458},
+{"name":"四川省成都市龙泉驿区洛带镇","province":"四川省","city":"成都市","longitude":104.325135,"latitude":30.639733},
+{"name":"四川省大邑县新场镇","province":"四川省","city":"成都市","longitude":103.43496,"latitude":30.531461},
+{"name":"四川省广元市元坝区昭化镇","province":"四川省","city":"广元市","longitude":105.715138,"latitude":32.332732},
+{"name":"四川省合江县福宝镇","province":"四川省","city":"泸州市","longitude":106.075139,"latitude":28.772341},
+{"name":"四川省资中县罗泉镇","province":"四川省","city":"内江市","longitude":104.507301,"latitude":29.825225},
+{"name":"贵州省安顺市西秀区旧州镇","province":"贵州省","city":"安顺市","longitude":106.138713,"latitude":26.252675},
+{"name":"贵州省平坝县天龙镇","province":"贵州省","city":"安顺市","longitude":106.167122,"latitude":26.356781},
+{"name":"云南省孟连县娜允镇","province":"云南省","city":"普洱市","longitude":99.587979,"latitude":22.325125},
+{"name":"上海市金山区枫泾镇","province":"上海市","city":"上海市","longitude":121.038509,"latitude":30.884877},
+{"name":"西藏自治区日喀则市萨迦镇","province":"西藏自治区","city":"日喀则市","longitude":88.021964,"latitude":28.903121},
+{"name":"陕西省铜川市印台区陈炉镇","province":"陕西省","city":"铜川市","longitude":109.196742,"latitude":35.064189},
+{"name":"甘肃省秦安县陇城镇","province":"甘肃省","city":"天水市","longitude":105.977158,"latitude":35.000449},
+{"name":"甘肃省临潭县新城镇","province":"甘肃省","city":"甘南藏族自治州","longitude":103.59531,"latitude":34.67134},
+{"name":"河北省涉县固新镇","province":"河北省","city":"邯郸市","longitude":113.745365,"latitude":36.48036},
+{"name":"河北省武安市冶陶镇","province":"河北省","city":"邯郸市","longitude":113.942345,"latitude":36.640365},
+{"name":"山西省天镇县新平堡镇","province":"山西省","city":"大同市","longitude":114.079928,"latitude":40.633671},
+{"name":"山西省阳城县润城镇","province":"山西省","city":"晋城市","longitude":112.513177,"latitude":35.478621},
+{"name":"上海市嘉定区南翔镇","province":"上海市","city":"上海市","longitude":121.31082,"latitude":31.299815},
+{"name":"上海市浦东新区高桥镇","province":"上海市","city":"上海市","longitude":121.579505,"latitude":31.339221},
+{"name":"江苏省苏州市吴中区木渎镇","province":"江苏省","city":"苏州市","longitude":120.521852,"latitude":31.252796},
+{"name":"上海市青浦区练塘镇","province":"上海市","city":"上海市","longitude":121.052565,"latitude":30.999236},
+{"name":"上海市金山区张堰镇","province":"上海市","city":"上海市","longitude":121.29806,"latitude":30.801603},
+{"name":"江苏省苏州市吴中区东山镇","province":"江苏省","city":"苏州市","longitude":120.406605,"latitude":31.085069},
+{"name":"江苏省无锡市锡山区荡口镇","province":"江苏省","city":"无锡市","longitude":120.550657,"latitude":31.524021},
+{"name":"江苏省兴化市沙沟镇","province":"江苏省","city":"泰州市","longitude":119.722651,"latitude":33.14616},
+{"name":"江苏省江阴市长泾镇","province":"江苏省","city":"无锡市","longitude":120.48207,"latitude":31.747575},
+{"name":"江苏省张家港市凤凰镇","province":"江苏省","city":"苏州市","longitude":120.62796,"latitude":31.787765},
+{"name":"浙江省景宁畲族自治县鹤溪镇","province":"浙江省","city":"丽水市","longitude":119.637717,"latitude":27.972068},
+{"name":"浙江省海宁市盐官镇","province":"浙江省","city":"嘉兴市","longitude":120.558247,"latitude":30.451674},
+{"name":"福建省宁德市蕉城区霍童镇","province":"福建省","city":"宁德市","longitude":119.423025,"latitude":26.849907},
+{"name":"江苏省太仓市沙溪镇","province":"江苏省","city":"苏州市","longitude":121.076709,"latitude":31.555265},
+{"name":"福建省平和县九峰镇","province":"福建省","city":"漳州市","longitude":117.021309,"latitude":24.250512},
+{"name":"福建省武夷山市五夫镇","province":"福建省","city":"南平市","longitude":118.212788,"latitude":27.610283},
+{"name":"福建省顺昌县元坑镇","province":"福建省","city":"南平市","longitude":117.717146,"latitude":26.756673},
+{"name":"江西省吉安市青原区富田镇","province":"江西省","city":"吉安市","longitude":115.224153,"latitude":26.826101},
+{"name":"河南省郏县冢头镇","province":"河南省","city":"平顶山市","longitude":113.35479,"latitude":33.986086},
+{"name":"湖北省潜江市熊口镇","province":"湖北省","city":"[]","longitude":112.781205,"latitude":30.306311},
+{"name":"湖南省绥宁县寨市镇","province":"湖南省","city":"邵阳市","longitude":110.046141,"latitude":26.503316},
+{"name":"湖南省泸溪县浦市镇","province":"湖南省","city":"湘西土家族苗族自治州","longitude":110.10747,"latitude":28.080061},
+{"name":"广东省中山市黄圃镇","province":"广东省","city":"中山市","longitude":113.339081,"latitude":22.711324},
+{"name":"广东省大埔县百侯镇","province":"广东省","city":"梅州市","longitude":116.773408,"latitude":24.297476},
+{"name":"江苏省姜堰市溱潼镇","province":"江苏省","city":"泰州市","longitude":120.099663,"latitude":32.640222},
+{"name":"重庆市荣昌县路孔镇","province":"重庆市","city":"重庆市","longitude":105.650557,"latitude":29.486662},
+{"name":"重庆市江津区白沙镇","province":"重庆市","city":"重庆市","longitude":106.12177,"latitude":29.061335},
+{"name":"重庆市巫溪县宁厂镇","province":"重庆市","city":"重庆市","longitude":109.641884,"latitude":31.4892},
+{"name":"四川省屏山县龙华镇","province":"四川省","city":"宜宾市","longitude":104.033001,"latitude":28.782402},
+{"name":"四川省富顺县赵化镇","province":"四川省","city":"自贡市","longitude":105.125202,"latitude":29.024486},
+{"name":"四川省犍为县清溪镇","province":"四川省","city":"乐山市","longitude":103.918547,"latitude":29.153779},
+{"name":"云南省宾川县州城镇","province":"云南省","city":"大理白族自治州","longitude":100.588031,"latitude":25.757332},
+{"name":"云南省洱源县凤羽镇","province":"云南省","city":"大理白族自治州","longitude":99.929596,"latitude":25.99576},
+{"name":"云南省蒙自县新安所镇","province":"云南省","city":"红河哈尼族彝族自治州","longitude":103.424735,"latitude":23.349674},
+{"name":"陕西省宁强县青木川镇","province":"陕西省","city":"汉中市","longitude":105.578076,"latitude":32.830842},
+{"name":"江苏省泰兴市黄桥镇","province":"江苏省","city":"泰州市","longitude":120.230506,"latitude":32.239213},
+{"name":"陕西省柞水县凤凰镇","province":"陕西省","city":"商洛市","longitude":109.375968,"latitude":33.52712},
+{"name":"甘肃省榆中县金崖镇","province":"甘肃省","city":"兰州市","longitude":104.089053,"latitude":36.015838},
+{"name":"河北省武安市伯延镇","province":"河北省","city":"邯郸市","longitude":114.175083,"latitude":36.616821},
+{"name":"河北省蔚县代王城镇","province":"河北省","city":"张家口市","longitude":114.640033,"latitude":39.844664},
+{"name":"山西省泽州县周村镇","province":"山西省","city":"晋城市","longitude":112.629258,"latitude":35.475216},
+{"name":"内蒙古自治区丰镇市隆盛庄镇","province":"内蒙古自治区","city":"乌兰察布市","longitude":113.441317,"latitude":40.701561},
+{"name":"内蒙古自治区库伦旗库伦镇","province":"内蒙古自治区","city":"通辽市","longitude":121.78855,"latitude":42.732866},
+{"name":"辽宁省东港市孤山镇","province":"辽宁省","city":"丹东市","longitude":123.592321,"latitude":39.919227},
+{"name":"辽宁省绥中县前所镇","province":"辽宁省","city":"葫芦岛市","longitude":119.961165,"latitude":40.100716},
+{"name":"上海市青浦区金泽镇","province":"上海市","city":"上海市","longitude":120.942644,"latitude":31.059121},
+{"name":"浙江省湖州市南浔区南浔镇","province":"浙江省","city":"湖州市","longitude":120.424891,"latitude":30.867416},
+{"name":"上海市浦东新区川沙新镇","province":"上海市","city":"上海市","longitude":121.695947,"latitude":31.193105},
+{"name":"江苏省苏州市吴江区黎里镇","province":"江苏省","city":"苏州市","longitude":120.766808,"latitude":31.030528},
+{"name":"江苏省苏州市吴江区震泽镇","province":"江苏省","city":"苏州市","longitude":120.509492,"latitude":30.912321},
+{"name":"江苏省东台市富安镇","province":"江苏省","city":"盐城市","longitude":120.474118,"latitude":32.678567},
+{"name":"江苏省扬州市江都区大桥镇","province":"江苏省","city":"扬州市","longitude":119.715889,"latitude":32.368935},
+{"name":"江苏省常州市新北区孟河镇","province":"江苏省","city":"常州市","longitude":119.847051,"latitude":32.006965},
+{"name":"江苏省宜兴市周铁镇","province":"江苏省","city":"无锡市","longitude":119.996704,"latitude":31.436495},
+{"name":"江苏省如东县栟茶镇","province":"江苏省","city":"南通市","longitude":120.894965,"latitude":32.529852},
+{"name":"江苏省常熟市古里镇","province":"江苏省","city":"苏州市","longitude":120.83083,"latitude":31.629078},
+{"name":"浙江省嵊州市崇仁镇","province":"浙江省","city":"绍兴市","longitude":120.708003,"latitude":29.603485},
+{"name":"江苏省昆山市周庄镇","province":"江苏省","city":"苏州市","longitude":120.839887,"latitude":31.129791},
+{"name":"浙江省绍兴县安昌镇","province":"浙江省","city":"绍兴市","longitude":120.496629,"latitude":30.144709},
+{"name":"浙江省永康市芝英镇","province":"浙江省","city":"金华市","longitude":120.119293,"latitude":28.932018},
+{"name":"浙江省松阳县西屏镇","province":"浙江省","city":"丽水市","longitude":119.487161,"latitude":28.452303},
+{"name":"浙江省岱山县东沙镇","province":"浙江省","city":"舟山市","longitude":122.161268,"latitude":30.30086},
+{"name":"安徽省泾县桃花潭镇","province":"安徽省","city":"宣城市","longitude":118.152267,"latitude":30.484835},
+{"name":"安徽省黄山市徽州区西溪南镇","province":"安徽省","city":"黄山市","longitude":118.289797,"latitude":29.831252},
+{"name":"安徽省铜陵市郊区大通镇","province":"安徽省","city":"铜陵市","longitude":117.767387,"latitude":30.821273},
+{"name":"福建省永定县湖坑镇","province":"福建省","city":"龙岩市","longitude":116.952176,"latitude":24.646929},
+{"name":"福建省武平县中山镇","province":"福建省","city":"龙岩市","longitude":116.044434,"latitude":25.027673},
+{"name":"福建省安溪县湖头镇","province":"福建省","city":"泉州市","longitude":118.052641,"latitude":25.234219},
+{"name":"福建省古田县杉洋镇","province":"福建省","city":"宁德市","longitude":119.209033,"latitude":26.665249},
+{"name":"浙江省宁波市江北区慈城镇","province":"浙江省","city":"宁波市","longitude":121.449972,"latitude":29.978387},
+{"name":"福建省屏南县双溪镇","province":"福建省","city":"宁德市","longitude":119.04673,"latitude":27.018059},
+{"name":"福建省宁化县石壁镇","province":"福建省","city":"三明市","longitude":116.513037,"latitude":26.244907},
+{"name":"江西省萍乡市安源区安源镇","province":"江西省","city":"萍乡市","longitude":113.884862,"latitude":27.6112},
+{"name":"江西省铅山县河口镇","province":"江西省","city":"上饶市","longitude":117.713131,"latitude":28.296352},
+{"name":"江西省广昌县驿前镇","province":"江西省","city":"抚州市","longitude":116.327308,"latitude":26.561585},
+{"name":"江西省金溪县浒湾镇","province":"江西省","city":"抚州市","longitude":116.554299,"latitude":27.916833},
+{"name":"江西省吉安县永和镇","province":"江西省","city":"吉安市","longitude":114.933623,"latitude":27.014174},
+{"name":"江西省铅山县石塘镇","province":"江西省","city":"上饶市","longitude":117.844743,"latitude":28.114342},
+{"name":"山东省微山县南阳镇","province":"山东省","city":"济宁市","longitude":116.674011,"latitude":35.093838},
+{"name":"河南省遂平县嵖岈山镇","province":"河南省","city":"驻马店市","longitude":113.749005,"latitude":33.175985},
+{"name":"浙江省象山县石浦镇","province":"浙江省","city":"宁波市","longitude":121.931399,"latitude":29.203205},
+{"name":"河南省滑县道口镇","province":"河南省","city":"安阳市","longitude":114.513745,"latitude":35.58107},
+{"name":"河南省光山县白雀园镇","province":"河南省","city":"信阳市","longitude":115.102196,"latitude":31.786179},
+{"name":"湖北省钟祥市石牌镇","province":"湖北省","city":"荆门市","longitude":112.505819,"latitude":30.982642},
+{"name":"湖北省随县安居镇","province":"湖北省","city":"随州市","longitude":113.210185,"latitude":31.750405},
+{"name":"湖北省麻城市歧亭镇","province":"湖北省","city":"黄冈市","longitude":114.753723,"latitude":31.017657},
+{"name":"湖南省洞口县高沙镇","province":"湖南省","city":"邵阳市","longitude":110.677518,"latitude":26.959639},
+{"name":"湖南省花垣县边城镇","province":"湖南省","city":"湘西土家族苗族自治州","longitude":109.28448,"latitude":28.501756},
+{"name":"广东省珠海市斗门区斗门镇","province":"广东省","city":"珠海市","longitude":113.194855,"latitude":22.222673},
+{"name":"广东省佛山市南海区西樵镇","province":"广东省","city":"佛山市","longitude":112.987172,"latitude":22.938068},
+{"name":"广东省梅县松口镇","province":"广东省","city":"梅州市","longitude":116.391703,"latitude":24.496593},
+{"name":"福建省邵武市和平镇","province":"福建省","city":"南平市","longitude":117.30254,"latitude":27.158461},
+{"name":"广东省大埔县茶阳镇","province":"广东省","city":"梅州市","longitude":116.681091,"latitude":24.513561},
+{"name":"广东省大埔县三河镇","province":"广东省","city":"梅州市","longitude":116.58484,"latitude":24.399221},
+{"name":"广西壮族自治区兴安县界首镇","province":"广西壮族自治区","city":"桂林市","longitude":110.756666,"latitude":25.726606},
+{"name":"广西壮族自治区恭城瑶族自治县恭城镇","province":"广西壮族自治区","city":"桂林市","longitude":110.823906,"latitude":24.836704},
+{"name":"广西壮族自治区贺州市八步区贺街镇","province":"广西壮族自治区","city":"贺州市","longitude":111.662924,"latitude":24.33763},
+{"name":"广西壮族自治区鹿寨县中渡镇","province":"广西壮族自治区","city":"柳州市","longitude":109.686015,"latitude":24.666657},
+{"name":"重庆市开县温泉镇","province":"重庆市","city":"重庆市","longitude":108.520914,"latitude":31.364042},
+{"name":"重庆市黔江区濯水镇","province":"重庆市","city":"重庆市","longitude":108.75194,"latitude":29.307296},
+{"name":"四川省自贡市贡井区艾叶镇","province":"四川省","city":"自贡市","longitude":104.689023,"latitude":29.348308},
+{"name":"四川省自贡市大安区牛佛镇","province":"四川省","city":"自贡市","longitude":105.033093,"latitude":29.377302},
+{"name":"江西省浮梁县瑶里镇","province":"江西省","city":"景德镇市","longitude":117.572882,"latitude":29.529529},
+{"name":"四川省平昌县白衣镇","province":"四川省","city":"巴中市","longitude":107.13456,"latitude":31.434362},
+{"name":"四川省古蔺县二郎镇","province":"四川省","city":"泸州市","longitude":106.178155,"latitude":28.14307},
+{"name":"四川省金堂县五凤镇","province":"四川省","city":"成都市","longitude":104.478284,"latitude":30.634656},
+{"name":"四川省宜宾县横江镇","province":"四川省","city":"宜宾市","longitude":104.351527,"latitude":28.552972},
+{"name":"四川省隆昌县云顶镇","province":"四川省","city":"内江市","longitude":105.285871,"latitude":29.239294},
+{"name":"贵州省赤水市大同镇","province":"贵州省","city":"遵义市","longitude":105.681299,"latitude":28.504634},
+{"name":"贵州省松桃苗族自治县寨英镇","province":"贵州省","city":"铜仁市","longitude":108.913599,"latitude":27.942731},
+{"name":"陕西省神木县高家堡镇","province":"陕西省","city":"榆林市","longitude":110.298889,"latitude":38.550698},
+{"name":"陕西省旬阳县蜀河镇","province":"陕西省","city":"安康市","longitude":109.361783,"latitude":32.832213},
+{"name":"陕西省石泉县熨斗镇","province":"陕西省","city":"安康市","longitude":108.15929,"latitude":32.794731},
+{"name":"河南省禹州市神垕镇","province":"河南省","city":"许昌市","longitude":113.229926,"latitude":34.122459},
+{"name":"陕西省澄城县尧头镇","province":"陕西省","city":"渭南市","longitude":109.861371,"latitude":35.157558},
+{"name":"青海省循化撒拉族自治县街子镇","province":"青海省","city":"海东市","longitude":102.429892,"latitude":35.865917},
+{"name":"新疆维吾尔自治区富蕴县可可托海镇","province":"新疆维吾尔自治区","city":"阿勒泰地区","longitude":89.811189,"latitude":47.221611},
+{"name":"山西省长治市上党区荫城镇","province":"山西省","city":"长治市","longitude":113.098379,"latitude":35.982925},
+{"name":"山西省阳城县横河镇","province":"山西省","city":"晋城市","longitude":112.157969,"latitude":35.360768},
+{"name":"山西省泽州县高都镇","province":"山西省","city":"晋城市","longitude":112.957317,"latitude":35.597533},
+{"name":"山西省寿阳县宗艾镇","province":"山西省","city":"晋中市","longitude":113.124221,"latitude":37.965785},
+{"name":"山西省曲沃县曲村镇","province":"山西省","city":"临汾市","longitude":111.541362,"latitude":35.735767},
+{"name":"山西省翼城县西阎镇","province":"山西省","city":"临汾市","longitude":111.92433,"latitude":35.588573},
+{"name":"山西省汾阳市杏花村镇","province":"山西省","city":"吕梁市","longitude":111.899615,"latitude":37.33426},
+{"name":"河南省淅川县荆紫关镇","province":"河南省","city":"南阳市","longitude":111.024888,"latitude":33.243547},
+{"name":"内蒙古自治区牙克石市博克图镇","province":"内蒙古自治区","city":"呼伦贝尔市","longitude":121.910617,"latitude":48.75442},
+{"name":"上海市宝山区罗店镇","province":"上海市","city":"上海市","longitude":121.355815,"latitude":31.39523},
+{"name":"江苏省苏州市吴中区光福镇","province":"江苏省","city":"苏州市","longitude":120.4,"latitude":31.292794},
+{"name":"江苏省昆山市巴城镇","province":"江苏省","city":"苏州市","longitude":120.875341,"latitude":31.430575},
+{"name":"江苏省高邮市界首镇","province":"江苏省","city":"扬州市","longitude":119.424822,"latitude":33.003572},
+{"name":"江苏省高邮市临泽镇","province":"江苏省","city":"扬州市","longitude":119.608386,"latitude":33.038481},
+{"name":"浙江省慈溪市观海卫镇(鸣鹤)","province":"浙江省","city":"宁波市","longitude":121.412674,"latitude":30.15717},
+{"name":"浙江省平阳县顺溪镇","province":"浙江省","city":"温州市","longitude":120.197992,"latitude":27.564351},
+{"name":"浙江省湖州市南浔区双林镇","province":"浙江省","city":"湖州市","longitude":120.330318,"latitude":30.772513},
+{"name":"浙江省湖州市南浔区菱湖镇","province":"浙江省","city":"湖州市","longitude":120.18451,"latitude":30.716727},
+{"name":"湖北省监利县周老嘴镇","province":"湖北省","city":"荆州市","longitude":112.984815,"latitude":30.033924},
+{"name":"浙江省诸暨市枫桥镇","province":"浙江省","city":"绍兴市","longitude":120.42012,"latitude":29.798146},
+{"name":"浙江省临海市桃渚镇","province":"浙江省","city":"台州市","longitude":121.586989,"latitude":28.821762},
+{"name":"浙江省龙泉市住龙镇","province":"浙江省","city":"丽水市","longitude":118.90023,"latitude":28.17522},
+{"name":"安徽省六安市裕安区苏埠镇","province":"安徽省","city":"六安市","longitude":116.368238,"latitude":31.625795},
+{"name":"安徽省东至县东流镇","province":"安徽省","city":"池州市","longitude":116.920304,"latitude":30.208963},
+{"name":"安徽省青阳县陵阳镇","province":"安徽省","city":"池州市","longitude":117.904614,"latitude":30.414694},
+{"name":"福建省永安市贡川镇","province":"福建省","city":"三明市","longitude":117.447585,"latitude":26.082836},
+{"name":"福建省晋江市安海镇","province":"福建省","city":"泉州市","longitude":118.476283,"latitude":24.717171},
+{"name":"福建省永春县岵山镇","province":"福建省","city":"泉州市","longitude":118.259084,"latitude":25.280887},
+{"name":"福建省南靖县梅林镇","province":"福建省","city":"漳州市","longitude":117.093764,"latitude":24.666591},
+{"name":"湖北省红安县七里坪镇","province":"湖北省","city":"黄冈市","longitude":114.654843,"latitude":31.462915},
+{"name":"福建省宁德市蕉城区洋中镇","province":"福建省","city":"宁德市","longitude":119.381611,"latitude":26.704808},
+{"name":"福建省宁德市蕉城区三都镇","province":"福建省","city":"宁德市","longitude":119.677223,"latitude":26.635301},
+{"name":"江西省修水县山口镇","province":"江西省","city":"九江市","longitude":114.468176,"latitude":28.806892},
+{"name":"江西省贵溪市塘湾镇","province":"江西省","city":"鹰潭市","longitude":117.231099,"latitude":28.079133},
+{"name":"江西省樟树市临江镇","province":"江西省","city":"宜春市","longitude":115.402992,"latitude":28.001657},
+{"name":"山东省淄博市周村区王村镇","province":"山东省","city":"淄博市","longitude":117.730762,"latitude":36.682691},
+{"name":"山东省泰安市岱岳区大汶口镇","province":"山东省","city":"泰安市","longitude":117.080027,"latitude":35.967977},
+{"name":"湖北省当阳市淯溪镇","province":"湖北省","city":"宜昌市","longitude":111.934968,"latitude":30.91447},
+{"name":"湖南省浏阳市文家市镇","province":"湖南省","city":"长沙市","longitude":113.929207,"latitude":28.043727},
+{"name":"湖南省临湘市聂市镇","province":"湖南省","city":"岳阳市","longitude":113.4982,"latitude":29.569843},
+{"name":"湖南省龙山县里耶镇","province":"湖南省","city":"湘西土家族苗族自治州","longitude":109.298786,"latitude":28.787386},
+{"name":"湖南省东安县芦洪市镇","province":"湖南省","city":"永州市","longitude":111.490752,"latitude":26.611056},
+{"name":"广西壮族自治区阳朔县福利镇","province":"广西壮族自治区","city":"桂林市","longitude":110.558158,"latitude":24.78684},
+{"name":"广西壮族自治区防城港市防城区那良镇","province":"广西壮族自治区","city":"防城港市","longitude":107.853296,"latitude":21.678622},
+{"name":"重庆市万州区罗田镇","province":"重庆市","city":"重庆市","longitude":108.569413,"latitude":30.516074},
+{"name":"重庆市涪陵区青羊镇","province":"重庆市","city":"重庆市","longitude":107.212143,"latitude":29.527938},
+{"name":"重庆市江津区吴滩镇","province":"重庆市","city":"重庆市","longitude":106.069315,"latitude":29.254305},
+{"name":"重庆市江津区石蟆镇","province":"重庆市","city":"重庆市","longitude":105.93427,"latitude":28.983458},
+{"name":"重庆市酉阳土家族苗族自治县龚滩镇","province":"重庆市","city":"重庆市","longitude":108.353933,"latitude":28.918676},
+{"name":"四川省崇州市元通镇","province":"四川省","city":"成都市","longitude":103.624236,"latitude":30.73801},
+{"name":"四川省自贡市大安区三多寨镇","province":"四川省","city":"自贡市","longitude":104.869594,"latitude":29.429078},
+{"name":"江苏省吴江市同里镇","province":"江苏省","city":"苏州市","longitude":120.723045,"latitude":31.149788},
+{"name":"广东省广州市番禺区沙湾镇","province":"广东省","city":"广州市","longitude":113.339011,"latitude":22.911356},
+{"name":"四川省三台县郪江镇","province":"四川省","city":"绵阳市","longitude":105.09311,"latitude":30.809722},
+{"name":"四川省洪雅县柳江镇","province":"四川省","city":"眉山市","longitude":103.230999,"latitude":29.719146},
+{"name":"四川省达州市达川区石桥镇","province":"四川省","city":"达州市","longitude":107.118101,"latitude":31.298319},
+{"name":"四川省雅安市雨城区上里镇","province":"四川省","city":"雅安市","longitude":103.072058,"latitude":30.17599},
+{"name":"四川省通江县毛浴镇","province":"四川省","city":"巴中市","longitude":107.318703,"latitude":31.962038},
+{"name":"云南省通海县河西镇","province":"云南省","city":"玉溪市","longitude":102.648232,"latitude":24.141807},
+{"name":"云南省凤庆县鲁史镇","province":"云南省","city":"临沧市","longitude":99.999401,"latitude":24.837492},
+{"name":"云南省姚安县光禄镇","province":"云南省","city":"楚雄彝族自治州","longitude":101.202931,"latitude":25.581904},
+{"name":"云南省文山市平坝镇","province":"云南省","city":"文山壮族苗族自治州","longitude":104.103958,"latitude":23.243233},
+{"name":"西藏自治区定结县陈塘镇","province":"西藏自治区","city":"日喀则市","longitude":87.423957,"latitude":27.861731},
+{"name":"广东省吴川市吴阳镇","province":"广东省","city":"湛江市","longitude":110.692419,"latitude":21.347499},
+{"name":"西藏自治区贡嘎县杰德秀镇","province":"西藏自治区","city":"山南市","longitude":91.100178,"latitude":29.274078},
+{"name":"西藏自治区札达县托林镇","province":"西藏自治区","city":"阿里地区","longitude":79.80717,"latitude":31.478036},
+{"name":"甘肃省永登县红城镇","province":"甘肃省","city":"兰州市","longitude":103.392887,"latitude":36.462764},
+{"name":"广西灵川县大圩镇","province":"广西壮族自治区","city":"桂林市","longitude":110.403816,"latitude":25.182445},
+{"name":"重庆市渝北区龙兴镇","province":"重庆市","city":"重庆市","longitude":106.794565,"latitude":29.695644},
+{"name":"重庆市江津市中山镇","province":"重庆市","city":"重庆市","longitude":106.336434,"latitude":28.855274},
+{"name":"重庆市酉阳县龙潭镇","province":"重庆市","city":"重庆市","longitude":108.966324,"latitude":28.758933},
+{"name":"四川省邛崃市平乐镇","province":"四川省","city":"成都市","longitude":103.338966,"latitude":30.345812},
+{"name":"四川省大邑县安仁镇","province":"四川省","city":"成都市","longitude":103.616057,"latitude":30.514155},
+{"name":"四川省阆中市老观镇","province":"四川省","city":"南充市","longitude":106.179223,"latitude":31.762912},
+{"name":"四川省宜宾市翠屏区李庄镇","province":"四川省","city":"宜宾市","longitude":104.796559,"latitude":28.780245},
+{"name":"江苏省苏州市吴中区甪直镇","province":"江苏省","city":"苏州市","longitude":120.843944,"latitude":31.272788},
+{"name":"贵州省贵阳市花溪区青岩镇","province":"贵州省","city":"贵阳市","longitude":106.691183,"latitude":26.33405},
+{"name":"贵州省习水县土城镇","province":"贵州省","city":"遵义市","longitude":106.018903,"latitude":28.273486},
+{"name":"云南省禄丰县黑井镇","province":"云南省","city":"楚雄彝族自治州","longitude":101.745879,"latitude":25.369903},
+{"name":"甘肃省宕昌县哈达铺镇","province":"甘肃省","city":"陇南市","longitude":104.232675,"latitude":34.223162},
+{"name":"新疆鄯善县鲁克沁镇","province":"新疆维吾尔自治区","city":"吐鲁番市","longitude":89.771042,"latitude":42.746131},
+{"name":"河北省永年县广府镇","province":"河北省","city":"邯郸市","longitude":114.71408,"latitude":36.720371},
+{"name":"山西省襄汾县汾城镇","province":"山西省","city":"临汾市","longitude":111.280589,"latitude":35.81874},
+{"name":"山西省平定县娘子关镇","province":"山西省","city":"阳泉市","longitude":113.874109,"latitude":37.960641},
+{"name":"黑龙江省海林市横道河子镇","province":"黑龙江省","city":"牡丹江市","longitude":129.078641,"latitude":44.812391},
+{"name":"上海市青浦区朱家角镇","province":"上海市","city":"上海市","longitude":121.055751,"latitude":31.097943},
+{"name":"浙江省嘉善县西塘镇","province":"浙江省","city":"嘉兴市","longitude":120.891164,"latitude":30.939354},
+{"name":"江苏省高淳县淳溪镇","province":"江苏省","city":"南京市","longitude":118.880382,"latitude":31.327903},
+{"name":"江苏省昆山市千灯镇","province":"江苏省","city":"苏州市","longitude":121.025388,"latitude":31.257742},
+{"name":"江苏省东台市安丰镇","province":"江苏省","city":"盐城市","longitude":120.40199,"latitude":32.735416},
+{"name":"浙江省绍兴市越城区东浦镇","province":"浙江省","city":"绍兴市","longitude":120.531192,"latitude":30.059063},
+{"name":"浙江省宁海县前童镇","province":"浙江省","city":"宁波市","longitude":121.348282,"latitude":29.228458},
+{"name":"浙江省义乌市佛堂镇","province":"浙江省","city":"金华市","longitude":120.017647,"latitude":29.196272},
+{"name":"浙江省江山市廿八都镇","province":"浙江省","city":"衢州市","longitude":118.486452,"latitude":28.296979},
+{"name":"安徽省肥西县三河镇","province":"安徽省","city":"合肥市","longitude":117.251774,"latitude":31.515189},
+{"name":"安徽省六安市金安区毛坦厂镇","province":"安徽省","city":"六安市","longitude":116.546261,"latitude":31.348548},
+{"name":"江西省鹰潭市龙虎山风景区上清镇","province":"江西省","city":"鹰潭市","longitude":117.043408,"latitude":28.043337},
+{"name":"浙江省桐乡市乌镇","province":"浙江省","city":"嘉兴市","longitude":120.493792,"latitude":30.741511},
+{"name":"河南省社旗县赊店镇","province":"河南省","city":"南阳市","longitude":112.947852,"latitude":33.052838},
+{"name":"湖北省洪湖市瞿家湾镇","province":"湖北省","city":"荆州市","longitude":113.194555,"latitude":29.963445},
+{"name":"湖北省监利县程集镇","province":"湖北省","city":"荆州市","longitude":112.647273,"latitude":29.936764},
+{"name":"湖北省郧西县上津镇","province":"湖北省","city":"十堰市","longitude":110.043338,"latitude":33.142308},
+{"name":"广东省开平市赤坎镇","province":"广东省","city":"江门市","longitude":112.582516,"latitude":22.33498},
+{"name":"广东省珠海市唐家湾镇","province":"广东省","city":"珠海市","longitude":113.547734,"latitude":22.362732},
+{"name":"广东省陆丰市碣石镇","province":"广东省","city":"汕尾市","longitude":115.830379,"latitude":22.816885},
+{"name":"广西壮族自治区昭平县黄姚镇","province":"广西壮族自治区","city":"贺州市","longitude":111.205388,"latitude":24.217822},
+{"name":"广西壮族自治区阳朔县兴坪镇","province":"广西壮族自治区","city":"桂林市","longitude":110.535023,"latitude":24.915543},
+{"name":"海南省三亚市崖城镇","province":"海南省","city":"三亚市","longitude":109.163042,"latitude":18.36947},
+{"name":"福建省上杭县古田镇","province":"福建省","city":"龙岩市","longitude":116.823714,"latitude":25.223552},
+{"name":"重庆市北碚区金刀峡镇","province":"重庆市","city":"重庆市","longitude":106.656255,"latitude":29.999493},
+{"name":"重庆市江津市塘河镇","province":"重庆市","city":"重庆市","longitude":106.048756,"latitude":28.958883},
+{"name":"重庆市綦江县东溪镇","province":"重庆市","city":"重庆市","longitude":106.659125,"latitude":28.764434},
+{"name":"四川省双流县黄龙溪镇","province":"四川省","city":"成都市","longitude":103.953369,"latitude":30.332621},
+{"name":"四川省自贡市沿滩区仙市镇","province":"四川省","city":"自贡市","longitude":104.880492,"latitude":29.333554},
+{"name":"四川省合江县尧坝镇","province":"四川省","city":"泸州市","longitude":105.64403,"latitude":28.740296},
+{"name":"四川省古蔺县太平镇","province":"四川省","city":"泸州市","longitude":106.036149,"latitude":28.134641},
+{"name":"贵州省黄平县旧州镇","province":"贵州省","city":"黔东南苗族侗族自治州","longitude":107.779482,"latitude":26.987649},
+{"name":"贵州省雷山县西江镇","province":"贵州省","city":"黔东南苗族侗族自治州","longitude":108.172938,"latitude":26.493905},
+{"name":"云南省剑川县沙溪镇","province":"云南省","city":"大理白族自治州","longitude":99.852755,"latitude":26.315982},
+{"name":"重庆市合川县涞滩镇","province":"重庆市","city":"重庆市","longitude":106.487786,"latitude":30.173459},
+{"name":"云南省腾冲县和顺镇","province":"云南省","city":"保山市","longitude":98.465503,"latitude":25.019638},
+{"name":"西藏自治区乃东县昌珠镇","province":"西藏自治区","city":"山南市","longitude":91.772373,"latitude":29.190189},
+{"name":"甘肃省榆中县青城镇","province":"甘肃省","city":"兰州市","longitude":104.188529,"latitude":36.327409},
+{"name":"甘肃省永登县连城镇","province":"甘肃省","city":"兰州市","longitude":102.847692,"latitude":36.586225},
+{"name":"甘肃省古浪县大靖镇","province":"甘肃省","city":"武威市","longitude":103.411531,"latitude":37.502506},
+{"name":"新疆维吾尔自治区霍城县惠远镇","province":"新疆维吾尔自治区","city":"伊犁哈萨克自治州","longitude":80.90709,"latitude":43.99365},
+{"name":"北京市密云县古北口镇","province":"北京市","city":"北京市","longitude":117.16382,"latitude":40.692169},
+{"name":"天津市西青区杨柳青镇","province":"天津市","city":"天津市","longitude":117.017441,"latitude":39.139644},
+{"name":"河北省邯郸市峰峰矿区大社镇","province":"河北省","city":"邯郸市","longitude":114.241792,"latitude":36.541497},
+{"name":"河北省井陉县天长镇","province":"河北省","city":"石家庄市","longitude":114.029136,"latitude":38.003098},
+{"name":"重庆市石柱县西沱镇","province":"重庆市","city":"重庆市","longitude":108.214249,"latitude":30.399155},
+{"name":"山西省泽州县大阳镇","province":"山西省","city":"晋城市","longitude":112.797485,"latitude":35.663859},
+{"name":"内蒙古自治区喀喇沁旗王爷府镇","province":"内蒙古自治区","city":"赤峰市","longitude":118.51375,"latitude":41.842624},
+{"name":"内蒙古自治区多伦县多伦淖尔镇","province":"内蒙古自治区","city":"锡林郭勒盟","longitude":116.484611,"latitude":42.206789},
+{"name":"辽宁省海城市牛庄镇","province":"辽宁省","city":"鞍山市","longitude":122.536227,"latitude":40.948704},
+{"name":"吉林省四平市铁东区叶赫镇","province":"吉林省","city":"四平市","longitude":124.544442,"latitude":42.950913},
+{"name":"吉林省吉林市龙潭区乌拉街镇","province":"吉林省","city":"吉林市","longitude":126.542998,"latitude":44.135265},
+{"name":"黑龙江省黑河市爱辉镇","province":"黑龙江省","city":"黑河市","longitude":127.487565,"latitude":49.9785},
+{"name":"上海市南汇区新场镇","province":"上海市","city":"上海市","longitude":121.643248,"latitude":31.038701},
+{"name":"上海市嘉定区嘉定镇","province":"上海市","city":"上海市","longitude":121.249592,"latitude":31.383899},
+{"name":"江苏省昆山市锦溪镇","province":"江苏省","city":"苏州市","longitude":120.901217,"latitude":31.181491}
+  ];
+
+  // 渲染点位与热力图
+  addMarkers(townData);
+  addHeatmap(townData);
+
+  // 关闭弹窗
+  closePopupBtn.onclick = () => {
+    popup.style.display = "none";
+  };
+  // 点击地图空白关闭弹窗
+  map.on('click', () => {
+    if(popup.style.display === 'block') popup.style.display = 'none';
+  });
+
+  // 窗口大小改变适配
+  window.addEventListener('resize', () => {
+    map.resize();
+  });
+});
+</script>
+</body>
+</html>

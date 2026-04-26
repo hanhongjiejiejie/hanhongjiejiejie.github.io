@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>福建客家土楼文化 · 五元符号模型与层次体系图谱</title>
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5.5.0/dist/echarts.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            background: #e2d9cf;
+            font-family: 'Segoe UI', 'Roboto', 'Noto Sans', 'Microsoft YaHei', sans-serif;
+            padding: 20px;
+        }
+        .container {
+            max-width: 1500px;
+            margin: 0 auto;
+            background: #fffaf3;
+            border-radius: 36px;
+            box-shadow: 0 20px 40px -12px rgba(0,0,0,0.2);
+            overflow: hidden;
+            padding: 20px 20px 10px 20px;
+            position: relative;
+        }
+        /* 右上角导航按钮样式 */
+        .nav-buttons {
+            position: absolute;
+            top: 10px;
+            right: 24px;
+            display: flex;
+            gap: 12px;
+            z-index: 10;
+        }
+        .nav-btn {
+            padding: 8px 16px;
+            border-radius: 20px;
+            background: #FFEFD5 ;
+            color: #ec793a;
+            border: none;
+            font-family: "Ma Shan Zheng", "Noto Serif SC", "STKaiti", "KaiTi", serif !important;
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 3px 8px rgba(139, 75, 42, 0.2);
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .nav-btn:hover {
+            background: #b47442;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 12px rgba(139, 75, 42, 0.3);
+        }
+        .header {
+            text-align: center;
+            padding: 12px 20px 18px;
+            border-bottom: 3px solid #c49a6c;
+            margin-bottom: 16px;
+        }
+        .header h1 {
+            font-size: 2rem;
+            color: #8b4b2a;
+            letter-spacing: 1px;
+            font-weight: 700;
+            display: inline-flex;
+            align-items: center;
+            gap: 14px;
+        }
+        .header h1:before { content: "🏯"; font-size: 2.2rem; }
+        .header h1:after { content: "🏮"; font-size: 2.2rem; }
+        .sub {
+            color: #b47442;
+            margin-top: 10px;
+            font-size: 0.9rem;
+            background: #fcefdf;
+            display: inline-block;
+            padding: 5px 24px;
+            border-radius: 40px;
+            font-weight: 500;
+        }
+        .chart-wrapper {
+            background: #fef7ef;
+            border-radius: 28px;
+            padding: 8px;
+            box-shadow: 0 6px 16px rgba(0,0,0,0.05);
+        }
+        #relationChart {
+            width: 100%;
+            height: 820px;
+            background: #fef7ef;
+            border-radius: 24px;
+        }
+        .legend-note {
+            display: flex;
+            justify-content: center;
+            gap: 28px;
+            margin-top: 16px;
+            margin-bottom: 8px;
+            flex-wrap: wrap;
+            font-size: 0.75rem;
+            color: #7a563a;
+            background: #fff1e4;
+            padding: 8px 20px;
+            border-radius: 48px;
+            width: fit-content;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        .legend-note span {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .badge {
+            width: 14px;
+            height: 14px;
+            border-radius: 20px;
+            display: inline-block;
+        }
+        .footer {
+            text-align: center;
+            font-size: 0.7rem;
+            color: #b67b4a;
+            padding: 18px 0 6px 0;
+            border-top: 1px solid #e7d4bc;
+            margin-top: 18px;
+        }
+        @media (max-width: 700px) {
+            .container { padding: 12px; }
+            #relationChart { height: 650px; }
+            .header h1 { font-size: 1.4rem; }
+            .nav-buttons {
+                position: static;
+                justify-content: center;
+                margin-bottom: 12px;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <!-- 右上角导航按钮 -->
+    <div class="nav-buttons">
+        <a href="保护与利用.html" class="nav-btn">🛡️ 保护和利用</a>
+        <a href="承启楼.html" class="nav-btn">🗺️ 智能导览</a>
+    </div>
+
+    <div class="header">
+        <h1>福建客家土楼文化 · 五元符号模型与层次体系</h1>
+        <div class="sub">基于改进皮尔斯五元符号模型 | 符形 · 符指 · 符义 · 符事 · 符史 | 承启楼实证</div>
+    </div>
+    <div class="chart-wrapper">
+        <div id="relationChart"></div>
+    </div>
+    <div class="legend-note">
+        <span><i class="badge" style="background: #9B2E1A;"></i> 汉文化核心层</span>
+        <span><i class="badge" style="background: #D97736;"></i> 土楼核心文化层</span>
+        <span><i class="badge" style="background: #2E7A64;"></i> 总体建筑文化层</span>
+        <span><i class="badge" style="background: #4A7A8C;"></i> 构件建筑文化层</span>
+        <span><i class="badge" style="background: #8F6A3C;"></i> 非建筑文化层</span>
+        <span><i class="badge" style="background: #B56576;"></i> 五元符号维度(符形/符指/符义/符事/符史)</span>
+        <span>🔍 可拖拽/缩放 | 基于承启楼及客家土楼文化体系</span>
+    </div>
+    <div class="footer">
+        📖 依据《改进的五元符号模型构建——以福建客家土楼文化为例》吴春琼等 | 包含承启楼、八卦布局、楹联家训、符事符史等深层文化符号
+    </div>
+</div>
+
+<script>
+    (function() {
+        // 基于论文五层次符号体系 + 五元符号模型构建关系图谱
+        // 定义分类颜色 (增强区分)
+        const categories = [
+            { name: '汉文化核心层 (儒道根脉)', itemStyle: { color: '#9B2E1A', borderColor: '#fff' } },      // 深红褐
+            { name: '土楼核心文化层', itemStyle: { color: '#D97736', borderColor: '#fff' } },             // 橙褐
+            { name: '总体建筑文化层', itemStyle: { color: '#2E7A64', borderColor: '#fff' } },             // 深绿
+            { name: '构件建筑文化层', itemStyle: { color: '#4A7A8C', borderColor: '#fff' } },             // 靛蓝灰
+            { name: '非建筑文化层', itemStyle: { color: '#8F6A3C', borderColor: '#fff' } },               // 棕土
+            { name: '五元符号维度 (符形/符指/符义/符事/符史)', itemStyle: { color: '#B56576', borderColor: '#fff' } } // 紫罗兰
+        ];
+        
+        const nodes = [];
+        
+        // 1. 核心根节点：客家土楼文化
+        nodes.push({ id: 'root_hakka_tulou', name: '福建客家土楼\n文化体系', category: 0, symbolSize: 52, label: { show: true, fontSize: 14, fontWeight: 'bold' } });
+        
+        // 2. 五层次主轴线 (根据论文图3五层次符号体系)
+        nodes.push({ id: 'han_core', name: '汉文化核心层\n(儒道思想/太极八卦)', category: 0, symbolSize: 38, label: { show: true } });
+        nodes.push({ id: 'tulou_core', name: '土楼核心文化层\n(客家精神/承启)', category: 1, symbolSize: 38, label: { show: true } });
+        nodes.push({ id: 'overall_arch', name: '总体建筑文化层\n(圆楼/防御/团圆)', category: 2, symbolSize: 36, label: { show: true } });
+        nodes.push({ id: 'component_arch', name: '构件建筑文化层\n(八卦/祠堂/中轴)', category: 3, symbolSize: 36, label: { show: true } });
+        nodes.push({ id: 'non_building', name: '非建筑文化层\n(楹联/饮食/服饰/武术)', category: 4, symbolSize: 34, label: { show: true } });
+        
+        // 3. 五元符号模型维度 (符形、符指、符义、符事、符史)
+        nodes.push({ id: 'signifier', name: '符形 (符号表现形态)', category: 5, symbolSize: 28 });
+        nodes.push({ id: 'referent', name: '符指 (所指对象/文化)', category: 5, symbolSize: 28 });
+        nodes.push({ id: 'sense', name: '符义 (解释意义/内涵)', category: 5, symbolSize: 28 });
+        nodes.push({ id: 'story', name: '符事 (关联的故事)', category: 5, symbolSize: 28 });
+        nodes.push({ id: 'history', name: '符史 (演化历史形态)', category: 5, symbolSize: 28 });
+        
+        // ----- 汉文化核心层 详细元素 (儒道、太极、八卦、士族精神)-----
+        nodes.push({ id: 'confucian_tao', name: '儒家·道家精神', category: 0, symbolSize: 24 });
+        nodes.push({ id: 'taiji_bagua', name: '太极·八卦宇宙观', category: 0, symbolSize: 26 });
+        nodes.push({ id: 'scholar_spirit', name: '士族精神/衣冠南渡', category: 0, symbolSize: 24 });
+        nodes.push({ id: 'tianren_heyi', name: '天人合一/道法自然', category: 0, symbolSize: 24 });
+        
+        // ----- 土楼核心文化层 具体基因 (客家精神、承启楼、五元模型映射)-----
+        nodes.push({ id: 'hakka_spirit', name: '坚忍/勤劳/团结/爱国/进取', category: 1, symbolSize: 26 });
+        nodes.push({ id: 'chengqi_building', name: '承启楼 (土楼王)', category: 1, symbolSize: 30 });
+        nodes.push({ id: 'clan_family', name: '宗族血缘/聚族而居', category: 1, symbolSize: 24 });
+        nodes.push({ id: 'hometown_symbol', name: '故乡/乡愁符号', category: 1, symbolSize: 24 });
+        nodes.push({ id: 'migration_story', name: '南迁·衣冠南渡故事', category: 1, symbolSize: 24 });
+        
+        // ----- 总体建筑文化层 要素 (圆楼/方楼/五凤楼/防御/定居)-----
+        nodes.push({ id: 'round_tulou', name: '圆楼 (浑圆内敛/走马楼)', category: 2, symbolSize: 26 });
+        nodes.push({ id: 'square_building', name: '方楼/五凤楼/椭圆楼', category: 2, symbolSize: 24 });
+        nodes.push({ id: 'defense_function', name: '防御功能/堡垒特性', category: 2, symbolSize: 24 });
+        nodes.push({ id: 'settle_life', name: '定居/团圆/生活空间', category: 2, symbolSize: 24 });
+        nodes.push({ id: 'tulou_group', name: '土楼群 (外圆内方布局)', category: 2, symbolSize: 24 });
+        
+        // ----- 构件建筑文化层 (八卦布局/祠堂中轴/风水/装饰等)-----
+        nodes.push({ id: 'bagua_layout', name: '八卦型布局 (乾兑坤离等)', category: 3, symbolSize: 26 });
+        nodes.push({ id: 'ancestral_hall', name: '祖堂/中轴对称/礼制空间', category: 3, symbolSize: 26 });
+        nodes.push({ id: 'fengshui', name: '风水择址/坐北朝南', category: 3, symbolSize: 24 });
+        nodes.push({ id: 'beam_structure', name: '木构/夯土墙/走马廊', category: 3, symbolSize: 24 });
+        nodes.push({ id: 'yin_yang_well', name: '阴阳井/太极眼', category: 3, symbolSize: 22 });
+        nodes.push({ id: 'decor_carvings', name: '雕饰彩绘/石敢当/八卦符', category: 3, symbolSize: 24 });
+        
+        // ----- 非建筑文化层 (楹联/家训/饮食/服饰/武术/方言)-----
+        nodes.push({ id: 'couplets', name: '楹联家训 (承前祖德勤和俭)', category: 4, symbolSize: 26 });
+        nodes.push({ id: 'food_culture', name: '饮食文化 (闽西八干/老鼠干演化)', category: 4, symbolSize: 24 });
+        nodes.push({ id: 'clothing', name: '服饰符号 (大襟衫/大裆裤)', category: 4, symbolSize: 24 });
+        nodes.push({ id: 'martial_arts', name: '武术/体术 (吴家棍/五枚拳)', category: 4, symbolSize: 22 });
+        nodes.push({ id: 'opera_music', name: '戏剧/歌谣/客家音乐', category: 4, symbolSize: 22 });
+        nodes.push({ id: 'dialect', name: '客家话/中原古音', category: 4, symbolSize: 22 });
+        nodes.push({ id: 'crafts', name: '工艺/竹编/土楼模型', category: 4, symbolSize: 22 });
+        nodes.push({ id: 'screens_art', name: '郭子仪拜寿图屏风', category: 4, symbolSize: 24 });
+        
+        // 关联符事/符史的具体故事节点 (展示五元模型)
+        nodes.push({ id: 'story_chengqi', name: '符事: 江集成养鸭立业/祖孙三代建楼', category: 5, symbolSize: 22 });
+        nodes.push({ id: 'story_migration', name: '符事: 客家南迁/融合当地/保卫家园', category: 5, symbolSize: 22 });
+        nodes.push({ id: 'story_couplet', name: '符事: 承启楼楹联教化/郭子仪屏风故事', category: 5, symbolSize: 22 });
+        nodes.push({ id: 'history_tulou_type', name: '符史: 方楼→五凤楼→圆楼→楼群演化', category: 5, symbolSize: 24 });
+        nodes.push({ id: 'history_bagua', name: '符史: 八卦布局成熟/防御强化', category: 5, symbolSize: 22 });
+        nodes.push({ id: 'history_food', name: '符史: 老鼠干→兔仔干符号演变', category: 5, symbolSize: 22 });
+        
+        // 合并所有节点
+        const nodeMap = new Map();
+        nodes.forEach(n => nodeMap.set(n.id, n));
+        const finalNodes = Array.from(nodeMap.values());
+        
+        // ---------- 构建连线 (体现层次结构 & 五元符号关联) ----------
+        const links = [];
+        
+        // 根节点连接五大层次
+        links.push({ source: 'root_hakka_tulou', target: 'han_core', value: 5 });
+        links.push({ source: 'root_hakka_tulou', target: 'tulou_core', value: 5 });
+        links.push({ source: 'root_hakka_tulou', target: 'overall_arch', value: 4 });
+        links.push({ source: 'root_hakka_tulou', target: 'component_arch', value: 4 });
+        links.push({ source: 'root_hakka_tulou', target: 'non_building', value: 4 });
+        
+        // 五元符号维度与各层次之间的泛化关联 (符形/符指/符义/符事/符史覆盖全文化)
+        links.push({ source: 'signifier', target: 'root_hakka_tulou', value: 3 });
+        links.push({ source: 'referent', target: 'root_hakka_tulou', value: 3 });
+        links.push({ source: 'sense', target: 'root_hakka_tulou', value: 3 });
+        links.push({ source: 'story', target: 'root_hakka_tulou', value: 4 });
+        links.push({ source: 'history', target: 'root_hakka_tulou', value: 4 });
+        
+        // 汉文化核心 -> 儒道/太极/士族
+        links.push({ source: 'han_core', target: 'confucian_tao', value: 3 });
+        links.push({ source: 'han_core', target: 'taiji_bagua', value: 3 });
+        links.push({ source: 'han_core', target: 'scholar_spirit', value: 3 });
+        links.push({ source: 'han_core', target: 'tianren_heyi', value: 3 });
+        
+        // 土楼核心文化 -> 客家精神/承启楼/宗族/乡愁
+        links.push({ source: 'tulou_core', target: 'hakka_spirit', value: 4 });
+        links.push({ source: 'tulou_core', target: 'chengqi_building', value: 5 });
+        links.push({ source: 'tulou_core', target: 'clan_family', value: 4 });
+        links.push({ source: 'tulou_core', target: 'hometown_symbol', value: 3 });
+        links.push({ source: 'tulou_core', target: 'migration_story', value: 3 });
+        
+        // 总体建筑文化层 -> 具体形态
+        links.push({ source: 'overall_arch', target: 'round_tulou', value: 4 });
+        links.push({ source: 'overall_arch', target: 'square_building', value: 3 });
+        links.push({ source: 'overall_arch', target: 'defense_function', value: 4 });
+        links.push({ source: 'overall_arch', target: 'settle_life', value: 3 });
+        links.push({ source: 'overall_arch', target: 'tulou_group', value: 3 });
+        
+        // 构件建筑文化层 -> 细部
+        links.push({ source: 'component_arch', target: 'bagua_layout', value: 4 });
+        links.push({ source: 'component_arch', target: 'ancestral_hall', value: 4 });
+        links.push({ source: 'component_arch', target: 'fengshui', value: 3 });
+        links.push({ source: 'component_arch', target: 'beam_structure', value: 3 });
+        links.push({ source: 'component_arch', target: 'yin_yang_well', value: 3 });
+        links.push({ source: 'component_arch', target: 'decor_carvings', value: 3 });
+        
+        // 非建筑文化层
+        links.push({ source: 'non_building', target: 'couplets', value: 4 });
+        links.push({ source: 'non_building', target: 'food_culture', value: 3 });
+        links.push({ source: 'non_building', target: 'clothing', value: 3 });
+        links.push({ source: 'non_building', target: 'martial_arts', value: 2 });
+        links.push({ source: 'non_building', target: 'opera_music', value: 2 });
+        links.push({ source: 'non_building', target: 'dialect', value: 3 });
+        links.push({ source: 'non_building', target: 'crafts', value: 2 });
+        links.push({ source: 'non_building', target: 'screens_art', value: 3 });
+        
+        // 将符事/符史链接到具体故事节点 (体现五元模型深层)
+        links.push({ source: 'story', target: 'story_chengqi', value: 4 });
+        links.push({ source: 'story', target: 'story_migration', value: 4 });
+        links.push({ source: 'story', target: 'story_couplet', value: 4 });
+        links.push({ source: 'history', target: 'history_tulou_type', value: 4 });
+        links.push({ source: 'history', target: 'history_bagua', value: 3 });
+        links.push({ source: 'history', target: 'history_food', value: 3 });
+        
+        // 故事节点与具体文化元素关联 (承启楼, 楹联, 迁徙)
+        links.push({ source: 'story_chengqi', target: 'chengqi_building', value: 3 });
+        links.push({ source: 'story_migration', target: 'migration_story', value: 3 });
+        links.push({ source: 'story_couplet', target: 'couplets', value: 3 });
+        links.push({ source: 'story_couplet', target: 'screens_art', value: 3 });
+        links.push({ source: 'history_tulou_type', target: 'round_tulou', value: 3 });
+        links.push({ source: 'history_tulou_type', target: 'square_building', value: 2 });
+        links.push({ source: 'history_bagua', target: 'bagua_layout', value: 3 });
+        links.push({ source: 'history_food', target: 'food_culture', value: 2 });
+        
+        // 符义与核心精神关联
+        links.push({ source: 'sense', target: 'hakka_spirit', value: 4 });
+        links.push({ source: 'sense', target: 'confucian_tao', value: 3 });
+        links.push({ source: 'sense', target: 'defense_function', value: 2 });
+        links.push({ source: 'sense', target: 'clan_family', value: 3 });
+        links.push({ source: 'referent', target: 'tulou_core', value: 3 });
+        links.push({ source: 'signifier', target: 'round_tulou', value: 3 });
+        links.push({ source: 'signifier', target: 'bagua_layout', value: 2 });
+        
+        // 土楼核心文化层中的承启楼与五元模型直接挂接 (丰富)
+        links.push({ source: 'chengqi_building', target: 'history_tulou_type', value: 2 });
+        links.push({ source: 'chengqi_building', target: 'story_chengqi', value: 3 });
+        links.push({ source: 'chengqi_building', target: 'bagua_layout', value: 3 });
+        links.push({ source: 'couplets', target: 'story_couplet', value: 2 });
+        
+        // 去重连线
+        const linkSet = new Set();
+        const uniqueLinks = [];
+        for (let l of links) {
+            const key = `${l.source}|${l.target}`;
+            if (!linkSet.has(key) && l.source !== l.target) {
+                linkSet.add(key);
+                uniqueLinks.push(l);
+            }
+        }
+        
+        // 构建graph数据
+        const graphData = {
+            nodes: finalNodes.map(node => ({
+                id: node.id,
+                name: node.name,
+                category: node.category,
+                symbolSize: node.symbolSize || 22,
+                label: {
+                    show: node.symbolSize >= 22,
+                    position: 'right',
+                    fontSize: 10,
+                    offset: [4, 0],
+                    color: '#5a3a28',
+                    fontWeight: 'normal'
+                }
+            })),
+            links: uniqueLinks.map(link => ({
+                source: link.source,
+                target: link.target,
+                value: link.value || 1,
+                lineStyle: { curveness: 0.2, width: Math.min(3.2, (link.value || 1) * 0.7), color: '#bc8a5f', opacity: 0.7 }
+            })),
+            categories: categories
+        };
+        
+        const chartDom = document.getElementById('relationChart');
+        const myChart = echarts.init(chartDom);
+        const option = {
+            title: { show: false },
+            tooltip: {
+                trigger: 'item',
+                formatter: (params) => {
+                    if (params.dataType === 'node') {
+                        return `<strong>🏮 ${params.name}</strong><br/>层级: ${graphData.categories[params.data.category]?.name || '文化节点'}<br/>基于五元符号模型（符形/符指/符义/符事/符史）`;
+                    } else {
+                        return `🔗 关联强度: ${params.value}`;
+                    }
+                },
+                backgroundColor: 'rgba(65,40,25,0.92)',
+                borderColor: '#e0b084',
+                textStyle: { color: '#fff0e0' }
+            },
+            legend: {
+                data: graphData.categories.map(c => c.name),
+                orient: 'vertical',
+                left: 'left',
+                top: 'middle',
+                backgroundColor: 'rgba(250, 240, 228, 0.88)',
+                borderRadius: 16,
+                padding: [10, 14],
+                textStyle: { color: '#6a4022', fontWeight: 'bold' },
+                itemGap: 12,
+                itemWidth: 22,
+                itemHeight: 14
+            },
+            series: [{
+                name: '客家土楼文化五元符号图谱',
+                type: 'graph',
+                layout: 'force',
+                force: {
+                    initIterations: 380,
+                    repulsion: 620,
+                    edgeLength: [70, 170],
+                    gravity: 0.1,
+                    friction: 0.08,
+                    layoutAnimation: true
+                },
+                data: graphData.nodes,
+                links: graphData.links,
+                categories: graphData.categories,
+                roam: true,
+                draggable: true,
+                focusNodeAdjacency: false,
+                edgeSymbol: ['none', 'arrow'],
+                edgeSymbolSize: [0, 6],
+                label: {
+                    show: true,
+                    position: 'right',
+                    fontSize: 10,
+                    offset: [4, 2],
+                    formatter: (p) => p.name.length > 16 ? p.name.slice(0,14)+'..' : p.name,
+                    backgroundColor: 'rgba(255,248,235,0.8)',
+                    padding: [1, 5, 1, 5],
+                    borderRadius: 12,
+                    color: '#5c3a22'
+                },
+                emphasis: {
+                    focus: 'adjacency',
+                    lineStyle: { width: 3.5, color: '#e68a3e', curveness: 0.2 },
+                    label: { show: true, fontSize: 11, fontWeight: 'bold' }
+                },
+                lineStyle: {
+                    color: 'source',
+                    curveness: 0.2,
+                    opacity: 0.7,
+                    width: 1.5
+                },
+                animation: true,
+                animationDuration: 900,
+                animationEasingUpdate: 'cubicOut'
+            }],
+            backgroundColor: '#fef7ef',
+            toolbox: {
+                show: true,
+                feature: {
+                    saveAsImage: { title: '保存土楼文化图谱', backgroundColor: '#fbebd8' },
+                    restore: { title: '重置布局' },
+                    zoom: { title: '缩放' }
+                },
+                right: 20,
+                top: 12,
+                iconStyle: { borderColor: '#b46b3a' }
+            }
+        };
+        
+        myChart.setOption(option);
+
+        // ====================== 新增：点击圆楼节点跳转百度百科 ======================
+        myChart.on('click', function (params) {
+            // 判断点击的是否是 圆楼 节点
+            if (params.dataType === 'node' && params.data.id === 'round_tulou') {
+                // 新标签页打开链接
+                window.open('https://baike.baidu.com/item/%E8%B5%B0%E9%A9%AC%E6%A5%BC/10813183', '_blank');
+            }
+        });
+        // ========================================================================
+
+        window.addEventListener('resize', () => myChart.resize());
+        console.log(`福建客家土楼文化五元符号图谱加载完成，节点数: ${graphData.nodes.length}, 关系数: ${graphData.links.length}，涵盖符事、符史及承启楼实证。`);
+    })();
+</script>
+</body>
+</html>
