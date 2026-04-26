@@ -1,0 +1,3335 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>中国历史文化名城朝代时间轴（商朝-清朝）</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Microsoft YaHei', 'Heiti SC', sans-serif;
+        }
+        
+        body {
+            background-color: #f8f5f0;
+            color: #333;
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding: 30px 0;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            border-top: 4px solid #8B4513;
+        }
+        
+        header h1 {
+            color: #8B4513;
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+        
+        header p {
+            color: #666;
+            font-size: 16px;
+        }
+        
+        /* 时间轴样式 */
+        .timeline {
+            position: relative;
+            margin: 40px 0;
+            padding-left: 30px;
+        }
+        
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 10px;
+            top: 0;
+            bottom: 0;
+            width: 4px;
+            background-color: #8B4513;
+            border-radius: 2px;
+        }
+        
+        .timeline-item {
+            position: relative;
+            margin-bottom: 30px;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .timeline-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: -30px;
+            top: 20px;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background-color: #fff;
+            border: 4px solid #8B4513;
+            z-index: 1;
+        }
+        
+        .timeline-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .dynasty-name {
+            font-size: 20px;
+            font-weight: bold;
+            color: #8B4513;
+        }
+        
+        .dynasty-period {
+            font-size: 14px;
+            color: #666;
+            background-color: #f5f5f5;
+            padding: 3px 8px;
+            border-radius: 4px;
+        }
+        
+        .dynasty-count {
+            font-size: 14px;
+            color: #fff;
+            background-color: #8B4513;
+            padding: 3px 10px;
+            border-radius: 20px;
+        }
+        
+        /* 古城列表样式 */
+        .city-list {
+            display: none;
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px dashed #eee;
+        }
+        
+        .city-list.active {
+            display: block;
+        }
+        
+        .city-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 15px;
+        }
+        
+        .city-card {
+            padding: 15px;
+            background-color: #faf8f5;
+            border-radius: 6px;
+            border-left: 3px solid #8B4513;
+            transition: all 0.2s ease;
+        }
+        
+        .city-card:hover {
+            background-color: #f5f0e6;
+            transform: translateX(5px);
+        }
+        
+        .city-name {
+            font-weight: bold;
+            font-size: 16px;
+            color: #333;
+            margin-bottom: 5px;
+        }
+        
+        .city-info {
+            font-size: 13px;
+            color: #666;
+            line-height: 1.5;
+        }
+        
+        .city-dynasty {
+            margin-top: 5px;
+            font-size: 12px;
+            color: #8B4513;
+            font-style: italic;
+        }
+        
+        /* 全部显示按钮 */
+        .show-all-btn {
+            display: block;
+            margin: 30px auto;
+            padding: 12px 30px;
+            background-color: #8B4513;
+            color: #fff;
+            border: none;
+            border-radius: 30px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+            width: 200px;
+        }
+        
+        .show-all-btn:hover {
+            background-color: #6d380c;
+            transform: translateY(-2px);
+            box-shadow: 0 3px 10px rgba(139, 69, 19, 0.3);
+        }
+        
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+            }
+            
+            header h1 {
+                font-size: 24px;
+            }
+            
+            .timeline-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+            
+            .city-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>中国历史文化名城朝代时间轴（商朝 - 清朝）</h1>
+            <p>共收录 84 座古城，点击朝代可展开查看对应古城，默认显示全部古城</p>
+        </header>
+        
+        <button class="show-all-btn" id="showAllBtn">显示全部古城</button>
+        
+        <div class="timeline" id="timelineContainer">
+
+            <div class="timeline-item" data-dynasty="商朝">
+                <div class="timeline-header">
+                    <div class="dynasty-name">商朝</div>
+                    <div class="dynasty-period">公元前1600年 - 公元前1046年</div>
+                    <div class="dynasty-count">10 座古城</div>
+                </div>
+                <div class="city-list" id="cityList_商朝">
+                    <div class="city-grid">
+
+                        <div class="city-card">
+                            <div class="city-name">天津</div>
+                            <div class="city-info">
+                                <div>省份: 天津市</div>
+                                <div>所属城市: 天津市</div>
+                                <div>区县: 无</div>
+                                <div>坐标: 经度: 117.2015, 纬度: 39.0853</div>
+                            </div>
+                            <div class="city-dynasty">历史背景: 明、清（漕运重镇），近代（通商口岸）</div>
+                        </div>
+
+                        <div class="city-card">
+                            <div class="city-name">亳州</div>
+                            <div class="city-info">
+                                <div>省份: 安徽省</div>
+                                <div>所属城市: 亳州市</div>
+                                <div>区县: 无</div>
+                                <div>坐标: 经度: 115.7786, 纬度: 33.8463</div>
+                            </div>
+                            <div class="city-dynasty">历史背景: 商、汉（历史名城）</div>
+                        </div>
+
+                        <div class="city-card">
+                            <div class="city-name">青岛</div>
+                            <div class="city-info">
+                                <div>省份: 山东省</div>
+                                <div>所属城市: 青岛市</div>
+                                <div>区县: 无</div>
+                                <div>坐标: 经度: 120.3827, 纬度: 36.0669</div>
+                            </div>
+                            <div class="city-dynasty">历史背景: 明（海防要地），近代（通商口岸，历史文化名城）</div>
+                        </div>
+
+                        <div class="city-card">
+                            <div class="city-name">祁县</div>
+                            <div class="city-info">
+                                <div>省份: 山西省</div>
+                                <div>所属城市: 晋中市</div>
+                                <div>区县: 祁县</div>
+                                <div>坐标: 经度: 112.3352, 纬度: 37.3584</div>
+                            </div>
+                            <div class="city-dynasty">历史背景: 明、清（晋商故里）</div>
+                        </div>
+
+                        <div class="city-card">
+                            <div class="city-name">平遥</div>
+                            <div class="city-info">
+                                <div>省份: 山西省</div>
+                                <div>所属城市: 晋中市</div>
+                                <div>区县: 平遥县</div>
+                                <div>坐标: 经度: 112.1758, 纬度: 37.1896</div>
+                            </div>
+                            <div class="city-dynasty">历史背景: 明、清（晋商故里，古城保存完整）</div>
+                        </div>
+
+                        <div class="city-card">
+                            <div class="city-name">扬州</div>
+                            <div class="city-info">
+                                <div>省份: 江苏省</div>
+                                <div>所属城市: 扬州市</div>
+                                <div>区县: 无</div>
+                                <div>坐标: 经度: 119.4128, 纬度: 32.3944</div>
+                            </div>
+                            <div class="city-dynasty">历史背景: 汉、唐、宋、明、清（运河枢纽与商业重镇）</div>
+                        </div>
+
+                        <div class="city-card">
+                            <div class="city-name">濮阳</div>
+                            <div class="city-info">
+                                <div>省份: 河南省</div>
+                                <div>所属城市: 濮阳市</div>
+                                <div>区县: 无</div>
+                                <div>坐标: 经度: 115.0292, 纬度: 35.7627</div>
+                            </div>
+                            <div class="city-dynasty">历史背景: 夏、商（都城），汉、唐、宋、明、清（豫北古城）</div>
+                        </div>
+
+                        <div class="city-card">
+                            <div class="city-name">洛阳</div>
+                            <div class="city-info">
+                                <div>省份: 河南省</div>
+                                <div>所属城市: 洛阳市</div>
+                                <div>区县: 无</div>
+                                <div>坐标: 经度: 112.4539, 纬度: 34.6197</div>
+                            </div>
+                            <div class="city-dynasty">历史背景: 夏、商、周、汉、魏、晋、隋、唐（多朝都城）</div>
+                        </div>
+
+                        <div class="city-card">
+                            <div class="city-name">安阳</div>
+                            <div class="city-info">
+                                <div>省份: 河南省</div>
+                                <div>所属城市: 安阳市</div>
+                                <div>区县: 无</div>
+                                <div>坐标: 经度: 114.3925, 纬度: 36.0988</div>
+                            </div>
+                            <div class="city-dynasty">历史背景: 商、汉（古都）</div>
+                        </div>
+
+                        <div class="city-card">
+                            <div class="city-name">商丘</div>
+                            <div class="city-info">
+                                <div>省份: 河南省</div>
+                                <div>所属城市: 商丘市</div>
+                                <div>区县: 无</div>
+                                <div>坐标: 经度: 115.6564, 纬度: 34.4152</div>
+                            </div>
+                            <div class="city-dynasty">历史背景: 商、宋（古都）</div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+            <div class="timeline-item" data-dynasty="西周">
+                <div class="timeline-header">
+                    <div class="dynasty-name">西周</div>
+                    <div class="dynasty-period">公元前1046年 - 公元前771年</div>
+                    <div class="dynasty-count">0 座古城</div>
+                </div>
+                <div class="city-list" id="cityList_西周">
+                    <div class="city-grid">
+
+                        <div class="city-card">
+                            <div class="city-name">暂无数据</div>
+                            <div class="city-info">该朝代暂无收录的历史文化名城</div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+            <div class="timeline-item" data-dynasty="东周">
+                <div class="timeline-header">
+                    <div class="dynasty-name">东周</div>
+                    <div class="dynasty-period">公元前770年 - 公元前256年</div>
+                    <div class="dynasty-count">0 座古城</div>
+                </div>
+                <div class="city-list" id="cityList_东周">
+                    <div class="city-grid">
+
+                        <div class="city-card">
+                            <div class="city-name">暂无数据</div>
+                            <div class="city-info">该朝代暂无收录的历史文化名城</div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+            <div class="timeline-item" data-dynasty="春秋">
+                <div class="timeline-header">
+                    <div class="dynasty-name">春秋</div>
+                    <div class="dynasty-period">公元前770年 - 公元前476年</div>
+                    <div class="dynasty-count">6 座古城</div>
+                </div>
+                <div class="city-list" id="cityList_春秋">
+                    <div class="city-grid">
+
+                        <div class="city-card">
+                            <div class="city-name">曲阜</div>
+                            <div class="city-info">
+                                <div>省份: 山东省</div>
+                                <div>所属城市: 济宁市</div>
+                                <div>区县: 曲阜市</div>
+                                <div>坐标: 经度: 116.9862, 纬度: 35.5819</div>
+                            </div>
+                            <div class="city-dynasty">历史背景: 春秋（鲁国都城），历代（儒家文化圣地）</div>
+                        </div>
+
+                        <div class="city-card">
+                            <div class="city-name">邹城</div>
+                            <div class="city-info">
+                                <div>省份: 山东省</div>
+                                <div>所属城市: 济宁市</div>
+                                <div>区县: 邹城市</div>
+                                <div>坐标: 经度: 117.0074, 纬度: 35.4025</div>
+                            </div>
+                            <div class="city-dynasty">历史背景: 春秋（邾国都城），明、清（儒家文化名城）</div>
+                        </div>
+
+                        <div class="city-card">
+                            <div class="city-name">淄博</div>
+                            <div class="city-info">
+                                <div>省份: 山东省</div>
+                                <div>所属城市: 淄博市</div>
+                                <div>区县: 无</div>
+                                <div>坐标: 经度: 118.0550, 纬度: 36.8138</div>
+                            </div>
+                            <div class="city-dynasty">历史背景: 春秋（齐国属地），汉、唐、宋、明、清（历史城市）</div>
+                        </div>
+
+                        <div class="city-card">
+                            <div class="city-name">苏州</div>
+                            <div class="city-info">
+                                <div>省份: 江苏省</div>
+                                <div>所属城市: 苏州市</div>
+                                <div>区县: 无</div>
+                                <div>坐标: 经度: 120.5853, 纬度: 31.2998</div>
+                            </div>
+                            <div class="city-dynasty">历史背景: 春秋（吴国都城），宋、明、清（江南繁华都市）</div>
+                        </div>
+
+                        <div class="city-card">
+                            <div class="city-name">镇江</div>
+                            <div class="city-info">
+                                <div>省份: 江苏省</div>
+                                <div>所属城市: 镇江市</div>
+                                <div>区县: 无</div>
+                                <div>坐标: 经度: 119.4244, 纬度: 32.1881</div>
+                            </div>
+                            <div class="city-dynasty">历史背景: 春秋（吴国属地），宋、明、清（江南古城）</div>
+                        </div>
+
+                        <div class="city-card">
+                            <div class="city-name">绍兴</div>
+                            <div class="city-info">
+                                <div>省份: 浙江省</div>
+                                <div>所属城市: 绍兴市</div>
+                                <div>区县: 无</div>
+                                <div>坐标: 经度: 120.5829, 纬度: 30.0515</div>
+                            </div>
+                            <div class="city-dynasty">历史背景: 春秋（越国都城），南宋（陪都）</div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+            <div class="timeline-item" data-dynasty="战国">
+                <div class="timeline-header">
+                    <div class="dynasty-name">战国</div>
+                    <div class="dynasty-period">公元前475年 - 公元前221年</div>
+                    <div class="dynasty-count">1 座古城</div>
+                </div>
+                <div class="city-list" id="cityList_战国">
+                    <div class="city-grid">
+
+                        <div class="city-card">
+                            <div class="city-name">延安</div>
+                            <div class="city-info">
+                                <div>省份: 陕西省</div>
+                                <div>所属城市: 延安市</div>
+                                <div>区县: 无</div>
+                                <div>坐标: 经度: 109.4947, 纬度: 36.6501</div>
+                            </div>
+                            <div class="city-dynasty">历史背景: 战国（魏国领地），明、清（陕北重镇），近现代革命圣地</div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+            <div class="timeline-item" data-dynasty="秦朝">
+                <div class="timeline-header">
+                    <div class="dynasty-name">秦朝</div>
+                    <div class="dynasty-period">公元前221年 - 公元前207年</div>
+                    <div class="dynasty-count">4 座古城</div>
+                </div>
+                <div class="city-list" id="cityList_秦朝">
+                    <div class="city-grid">
+
+                        <div class="city-card">
+                            <div class="city-name">都江堰</div>
+                            <div class="city-info">
+                                <div>省份: 四川省</div>
+                                <div>所属城市: 成都市</div>
+                                <div>区县: 都江堰市</div>
+                                <div>坐标: 经度: 103.6472, 纬度: 30.9888</div>
+                            </div>
+                            <div class="city-dynasty">历史背景: 秦（李冰修建都江堰），汉、唐、宋、明、清（水利文化名城）</div>
+                        </div>
+
+                        <div class="city-card">
+                            <div class="city-name">天水</div>
+                            <div class="city-info">
+                                <div>省份: 甘肃省</div>
+                                <div>所属城市: 天水市</div>
+                                <div>区县: 无</div>
+                                <div>坐标: 经度: 105.7248, 纬度: 34.5815</div>
+                            </div>
+                            <div class="city-dynasty">历史背景: 周、秦（发源地之一），汉、唐（丝路重镇）</div>
+                        </div>
+
+                        <div class="city-card">
+                            <div class="city-name">西安</div>
+                            <div class="city-info">
+                                <div>省份: 陕西省</div>
+                                <div>所属城市: 西安市</div>
+                                <div>区县: 无</div>
+                                <div>坐标: 经度: 108.9396, 纬度: 34.3432</div>
+                            </div>
+                            <div class="city-dynasty">历史背景: 周、秦、汉、隋、唐（都城），十三朝古都</div>
+                        </div>
+
+                        <div class="city-card">
+                            <div class="city-name">咸阳</div>
+                            <div class="city-info">
+                                <div>省份: 陕西省</div>
+                                <div>所属城市: 咸阳市</div>
+                                <div>区县: 无</div>
+                                <div>坐标: 经度: 108.7088, 纬度: 34.3299</div>
+                            </div>
+                            <div class="city-dynasty">历史背景: 秦（都城），汉、唐（京畿重镇）</div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+            <div class="timeline-item" data-dynasty="西汉">
+                <div class="timeline-header">
+                    <div class="dynasty-name">西汉</div>
+                    <div class="dynasty-period">公元前202年 - 公元8年</div>
+                    <div class="dynasty-count">0 座古城</div>
+                </div>
+                <div class="city-list" id="cityList_西汉">
+                    <div class="city-grid">
+
+                        <div class="city-card">
+                            <div class="city-name">暂无数据</div>
+                            <div class="city-info">该朝代暂无收录的历史文化名城</div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+            <div class="timeline-item" data-dynasty="东汉">
+                <div class="timeline-header">
+                    <div class="dynasty-name">东汉</div>
+                    <div class="dynasty-period">公元25年 - 公元220年</div>
+                    <div class="dynasty-count">36 座古城</div>
+                </div>
+                <div class="city-list" id="cityList_东汉">
+                    <div class="city-grid">
+
+                        <div class="city-card">
+                            <div class="city-name">集安</div>
+                            <div class="city-info">
+                                <div>省份: 吉林省</div>
+                                <div>所属城市: 通化市</div>
+                                <div>区县: 集安市</div>
+                                <div>坐标: 经度: 126.1932, 纬度: 41.1258</div>
+                            </div>
+                            <div class="city-dynasty">历史背景: 高句丽（都城），汉、唐（边疆重镇）</div>
+                        </div>
+
+                        <div class="city-card">
+                            <div class="city-name">成都</div>
+                            <div class="city-info">
+                                <div>省份: 四川省</div>
+                                <div>所属城市: 成都市</div>
+                                <div>区县: 无</div>
+                                <div>坐标: 经度: 104.0663, 纬度: 30.5730</div>
+                            </div>
+                            <div class="city-dynasty">历史背景: 蜀（都城），汉、唐、宋、明、清（西南中心）</div>
+                        </div>
+
+                        <div class="city-card">
+                            <div class="city-name">乐山</div>
+                            <div class="city-info">
+                                <div>省份: 四川省</div>
+                                <div>所属城市: 乐山市</div>
+                                <div>区县: 无</div>
+                                <div>坐标: 经度: 103.7661, 纬度: 29.5523</div>
+                            </div>
+                            <div class="city-dynasty">历史背景: 汉、唐、宋、明、清（佛教文化名城，乐山大佛所在地）</div>
+                        </div>
+
+                        <div class="city-card">
+                            <div class="city-name">都江堰</div>
+                            <div class="city-info">
+                                <div>省份: 四川省</div>
+                                <div>所属城市: 成都市</div>
+                                <div>区县: 都江堰市</div>
+                                <div>坐标: 经度: 103.6472, 纬度: 30.9888</div>
+                            </div>
+                            <div class="city-dynasty">历史背景: 秦（李冰修建都江堰），汉、唐、宋、明、清（水利文化名城）</div>
+                        </div>
+
+                        <div class="city-card">
+                            <div class="city-name">泸州</div>
+                            <div class="city-info">
+                                <div>省份: 四川省</div>
+                                <div>所属城市: 泸州市</div>
+                                <div>区县: 无</div>
+                                <div>坐标: 经度: 105.4419, 纬度: 28.8710</div>
+                            </div>
+                            <div class="city-dynasty">历史背景: 汉、唐、宋、明、清（川南重镇，酒文化名城）</div>
+                        </div>
+
+                        <div class="city-card">
+                            <div class="city-name">阆中</div>
+                            <div class="city-info">
+                                <div>省份: 四川省</div>
+                                <div>所属城市: 南充市</div>
+                                <div>区县: 阆中市</div>
+                                <div>坐标: 经度: 106.0050, 纬度: 31.5584</div>
+                            </div>
+                            <div class="city-dynasty">历史背景: 汉、唐（川北古城）</div>
+                        </div>
+
+                        <div class="city-card">
+                            <div class="city-name">宜宾</div>
+                            <div class="city-info">
+                                <div>省份: 四川省</div>
+                                <div>所属城市: 宜宾市</div>
+                                <div>区县: 无</div>
+                                <div>坐标: 经度: 104.6428, 纬度: 28.7524</div>
+                            </div>
+                            <div class="city-dynasty">历史背景: 汉、唐（川南重镇）</div>
+                        </div>
+
+                        <div class="city-card">
+                            <div class="city-name">亳州</div>
+                            <div class="city-info">
+                                <div>省份: 安徽省</div>
+                                <div>所属城市: 亳州市</div>
+                                <div>区县: 无</div>
+                                <div>坐标: 经度: 115.7786, 纬度: 33.8463</div>
+                            </div>
+                            <div class="city-dynasty">历史背景: 商、汉（历史名城）</div>
+                        </div>
+
+                        <div class="city-card">
+                            <div class="city-name">淄博</div>
+                            <div class="city-info">
+                                <div>省份: 山东省</div>
+                                <div>所属城市: 淄博市</div>
+                                <div>区县: 无</div>
+                                <div>坐标: 经度: 118.0550, 纬度: 36.8138</div>
+                            </div>
+                            <div class="city-dynasty">历史背景: 春秋（齐国属地），汉、唐、宋、明、清（历史城市）</div>
+                        </div>
+
+                        <div class="city-card">
+                            <div class="city-name">济南</div>
+                            <div class="city-info">
+                                <div>省份: 山东省</div>
+                                <div>所属城市: 济南市</div>
+                                <div>区县: 无</div>
+                                <div>坐标: 经度: 117.1201, 纬度: 36.6521</div>
+                            </div>
+                            <div class="city-dynasty">历史背景: 汉、唐（山东首府）</div>
+                        </div>
+
+                        <div class="city-card">
+                            <div class="city-name">代县</div>
+                            <div class="city-info">
+                                <div>省份: 山西省</div>
+                                <div>所属城市: 忻州市</div>
+                                <div>区县: 代县</div>
+                                <div>坐标: 经度: 112.9601, 纬度: 39.0668</div>
+                            </div>
+                            <div class="city-dynasty">历史背景: 汉、唐（军事要塞），明、清（雁门关所在地）</div>
+                        </div>
+
+                        <div class="city-card">
+                            <div class="city-name">广州</div>
+                            <div class="city-info">
+                                <div>省份: 广东省</div>
+                                <div>所属城市: 广州市</div>
+                                <div>区县: 无</div>
+                                <div>坐标: 经度: 113.2645, 纬度: 23.1301</div>
+                            </div>
+                            <div class="city-dynasty">历史背景: 汉至清（岭南重镇，海上丝绸之路起点）</div>
+                        </div>
+
+                        <div class="city-card">
+                            <div class="city-name">桂林</div>
+                            <div class="city-info">
+                                <div>省份: 广西壮族自治区</div>
+                                <div>所属城市: 桂林市</div>
+                                <div>区县: 无</div>
+                                <div>坐标: 经度: 110.1798, 纬度: 25.2356</div>
+                            </div>
+                            <div class="city-dynasty">历史背景: 汉、唐、宋、明、清（岭南文化名城）</div>
+                        </div>
+
+                        <div class="city-card">
+                            <div class="city-name">喀什</div>
+                            <div class="city-info">
+                                <div>省份: 新疆维吾尔自治区</div>
+                                <div>所属城市: 喀什地区</div>
+                                <div>区县: 无</div>
+                                <div>坐标: 经度: 75.9897, 纬度: 39.4705</div>
+                            </div>
+                            <div class="city-dynasty">历史背景: 汉、唐（西域古城）</div>
+                        </div>
+
+                        <div class="city-card">
+                            <div class="city-name">扬州</div>
+                            <div class="city-info">
+                                <div>省份: 江苏省</div>
+                                <div>所属城市: 扬州市</div>
+                                <div>区县: 无</div>
+                                <div>坐标: 经度: 119.4128, 纬度: 32.3944</div>
+                            </div>
+                            <div class="city-dynasty">历史背景: 汉、唐、宋、明、清（运河枢纽与商业重镇）</div>
+                        </div>
+
+                        <div class="city-card">
+                            <div class="city-name">徐州</div>
+                            <div class="city-info">
+                                <div>省份: 江苏省</div>
+                                <div>所属城市: 徐州市</div>
+                                <div>区县: 无</div>
+                                <div>坐标: 经度: 117.2838, 纬度: 34.2042</div>
+                            </div>
+                            <div class="city-dynasty">历史背景: 汉、三国（军事重镇）</div>
+                        </div>
+
+                        <div class="city-card">
+                            <div class="city-name">南昌</div>
+                            <div class="city-info">
+                                <div>省份: 江西省</div>
+                                <div>所属城市: 南昌市</div>
+                                <div>区县: 无</div>
+                                <div>坐标: 经度: 115.8580, 纬度: 28.6830</div>
+                            </div>
+                            <div class="city-dynasty">历史背景: 汉、唐（江西首府）</div>
+                        </div>
+
+                        <div class="city-card">
+                            <div class="city-name">濮阳</div>
+                            <div class="city-info">
+                                <div>省份: 河南省</div>
+                                <div>所属城市: 濮阳市</div>
+                                <div>区县: 无</div>
+                                <div>坐标: 经度: 115.0292, 纬度: 35.7627</div>
+                            </div>
+                            <div class="city-dynasty">历史背景: 夏、商（都城），汉、唐、宋、明、清（豫北古城）</div>
+                        </div>
+
+                        <div class="city-card">
+                            <div class="city-name">洛阳</div>
+                            <div class="city-info">
+                                <div>省份: 河南省</div>
+                                <div>所属城市: 洛阳市</div>
+                                <div>区县: 无</div>
+                                <div>坐标: 经度: 112.4539, 纬度: 34.6197</div>
+                            </div>
+                            <div class="city-dynasty">历史背景: 夏、商、周、汉、魏、晋、隋、唐（多朝都城）</div>
+                        </div>
+
+                        <div class="city-card">
+                            <div class="city-name">开封</div>
+                            <div class="city-info">
+                                <div>省份: 河南省</div>
+                                <div>所属城市: 开封市</div>
+                                <div>区县: 无</div>
+                                <div>坐标: 经度: 114.3143, 纬度: 34.7981</div>
+                            </div>
+                            <div class="city-dynasty">历史背景: 魏、后梁、后晋、后汉、后周、北宋（都城）</div>
+                        </div>
+
+                        <div class="city-card">
+                            <div class="city-name">浚县</div>
+                            <div class="city-info">
+                                <div>省份: 河南省</div>
+                                <div>所属城市: 鹤壁市</div>
+                                <div>区县: 浚县</div>
+                                <div>坐标: 经度: 114.5506, 纬度: 35.6772</div>
+                            </div>
+                            <div class="city-dynasty">历史背景: 汉、唐、宋、明、清（豫北古城）</div>
+                        </div>
+
+                        <div class="city-card">
+                            <div class="city-name">安阳</div>
+                            <div class="city-info">
+                                <div>省份: 河南省</div>
+                                <div>所属城市: 安阳市</div>
+                                <div>区县: 无</div>
+                                <div>坐标: 经度: 114.3925, 纬度: 36.0988</div>
+                            </div>
+                            <div class="city-dynasty">历史背景: 商、汉（古都）</div>
+                        </div>
+
+                        <div class="city-card">
+                            <div class="city-name">南阳</div>
+                            <div class="city-info">
+                                <div>省份: 河南省</div>
+                                <div>所属城市: 南阳市</div>
+                                <div>区县: 无</div>
+                                <div>坐标: 经度: 112.5285, 纬度: 32.9902</div>
+                            </div>
+                            <div class="city-dynasty">历史背景: 汉、三国（历史名城）</div>
+                        </div>
+
+                        <div class="city-card">
+                            <div class="city-name">江陵</div>
+                            <div class="city-info">
+                                <div>省份: 湖北省</div>
+                                <div>所属城市: 荆州市</div>
+                                <div>区县: 江陵县</div>
+                                <div>坐标: 经度: 112.4246, 纬度: 30.0422</div>
+                            </div>
+                            <div class="city-dynasty">历史背景: 楚（都城），汉、三国、晋、隋、唐（重要城市）</div>
+                        </div>
+
+                        <div class="city-card">
+                            <div class="city-name">武汉</div>
+                            <div class="city-info">
+                                <div>省份: 湖北省</div>
+                                <div>所属城市: 武汉市</div>
+                                <div>区县: 无</div>
+                                <div>坐标: 经度: 114.3046, 纬度: 30.5934</div>
+                            </div>
+                            <div class="city-dynasty">历史背景: 汉、唐（华中重镇）</div>
+                        </div>
+
+                        <div class="city-card">
+                            <div class="city-name">襄樊</div>
+                            <div class="city-info">
+                                <div>省份: 湖北省</div>
+                                <div>所属城市: []</div>
+                                <div>区县: 无</div>
+                                <div>坐标: 经度: 114.3416, 纬度: 30.5462</div>
+                            </div>
+                            <div class="city-dynasty">历史背景: 汉、三国（军事重镇）</div>
+                        </div>
+
+                        <div class="city-card">
+                            <div class="city-name">长沙</div>
+                            <div class="city-info">
+                                <div>省份: 湖南省</div>
+                                <div>所属城市: 长沙市</div>
+                                <div>区县: 无</div>
+                                <div>坐标: 经度: 112.9389, 纬度: 28.2283</div>
+                            </div>
+                            <div class="city-dynasty">历史背景: 楚（重要城市），汉、唐、宋、明、清（区域中心）</div>
+                        </div>
+
+                        <div class="city-card">
+                            <div class="city-name">天水</div>
+                            <div class="city-info">
+                                <div>省份: 甘肃省</div>
+                                <div>所属城市: 天水市</div>
+                                <div>区县: 无</div>
+                                <div>坐标: 经度: 105.7248, 纬度: 34.5815</div>
+                            </div>
+                            <div class="city-dynasty">历史背景: 周、秦（发源地之一），汉、唐（丝路重镇）</div>
+                        </div>
+
+                        <div class="city-card">
+                            <div class="city-name">张掖</div>
+                            <div class="city-info">
+                                <div>省份: 甘肃省</div>
+                                <div>所属城市: 张掖市</div>
+                                <div>区县: 无</div>
+                                <div>坐标: 经度: 100.4499, 纬度: 38.9248</div>
+                            </div>
+                            <div class="city-dynasty">历史背景: 汉、唐（丝路古城）</div>
+                        </div>
+
+                        <div class="city-card">
+                            <div class="city-name">敦煌</div>
+                            <div class="city-info">
+                                <div>省份: 甘肃省</div>
+                                <div>所属城市: 酒泉市</div>
+                                <div>区县: 敦煌市</div>
+                                <div>坐标: 经度: 94.6620, 纬度: 40.1421</div>
+                            </div>
+                            <div class="city-dynasty">历史背景: 汉、唐（丝路明珠）</div>
+                        </div>
+
+                        <div class="city-card">
+                            <div class="city-name">武威</div>
+                            <div class="city-info">
+                                <div>省份: 甘肃省</div>
+                                <div>所属城市: 武威市</div>
+                                <div>区县: 无</div>
+                                <div>坐标: 经度: 102.6378, 纬度: 37.9290</div>
+                            </div>
+                            <div class="city-dynasty">历史背景: 汉、唐（丝路古城）</div>
+                        </div>
+
+                        <div class="city-card">
+                            <div class="city-name">镇远</div>
+                            <div class="city-info">
+                                <div>省份: 贵州省</div>
+                                <div>所属城市: 黔东南苗族侗族自治州</div>
+                                <div>区县: 镇远县</div>
+                                <div>坐标: 经度: 108.4295, 纬度: 27.0490</div>
+                            </div>
+                            <div class="city-dynasty">历史背景: 汉、唐（黔东古城）</div>
+                        </div>
+
+                        <div class="city-card">
+                            <div class="city-name">西安</div>
+                            <div class="city-info">
+                                <div>省份: 陕西省</div>
+                                <div>所属城市: 西安市</div>
+                                <div>区县: 无</div>
+                                <div>坐标: 经度: 108.9396, 纬度: 34.3432</div>
+                            </div>
+                            <div class="city-dynasty">历史背景: 周、秦、汉、隋、唐（都城），十三朝古都</div>
+                        </div>
+
+                        <div class="city-card">
+                            <div class="city-name">咸阳</div>
+                            <div class="city-info">
+                                <div>省份: 陕西省</div>
+                                <div>所属城市: 咸阳市</div>
+                                <div>区县: 无</div>
+                                <div>坐标: 经度: 108.7088, 纬度: 34.3299</div>
+                            </div>
+                            <div class="city-dynasty">历史背景: 秦（都城），汉、唐（京畿重镇）</div>
+                        </div>
+
+                        <div class="city-card">
+                            <div class="city-name">汉中</div>
+                            <div class="city-info">
+                                <div>省份: 陕西省</div>
+                                <div>所属城市: 汉中市</div>
+                                <div>区县: 无</div>
+                                <div>坐标: 经度: 107.0232, 纬度: 33.0664</div>
+                            </div>
+                            <div class="city-dynasty">历史背景: 汉（刘邦发迹地），三国（军事重镇），唐、宋、明、清（区域中心）</div>
+                        </div>
+
+                        <div class="city-card">
+                            <div class="city-name">榆林</div>
+                            <div class="city-info">
+                                <div>省份: 陕西省</div>
+                                <div>所属城市: 榆林市</div>
+                                <div>区县: 无</div>
+                                <div>坐标: 经度: 109.7341, 纬度: 38.2858</div>
+                            </div>
+                            <div class="city-dynasty">历史背景: 汉、唐（陕北重镇）</div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+            <div class="timeline-item" data-dynasty="三国">
+                <div class="timeline-header">
+                    <div class="dynasty-name">三国</div>
+                    <div class="dynasty-period">公元220年 - 公元280年</div>
+                    <div class="dynasty-count">5 座古城</div>
+                </div>
+                <div class="city-list" id="cityList_三国">
+                    <div class="city-grid">
+
+                        <div class="city-card">
+                            <div class="city-name">徐州</div>
+                            <div class="city-info">
+                                <div>省份: 江苏省</div>
+                                <div>所属城市: 徐州市</div>
+                                <div>区县: 无</div>
+                                <div>坐标: 经度: 117.2838, 纬度: 34.2042</div>
+                            </div>
+                            <div class="city-dynasty">历史背景: 汉、三国（军事重镇）</div>
+                        </div>
+
+                        <div class="city-card">
+                            <div class="city-name">南阳</div>
+                            <div class="city-info">
+                                <div>省份: 河南省</div>
+                                <div>所属城市: 南阳市</div>
+                                <div>区县: 无</div>
+                                <div>坐标: 经度: 112.5285, 纬度: 32.9902</div>
+                            </div>
+                            <div class="city-dynasty">历史背景: 汉、三国（历史名城）</div>
+                        </div>
+
+                        <div class="city-card">
+                            <div class="city-name">江陵</div>
+                            <div class="city-info">
+                                <div>省份: 湖北省</div>
+                                <div>所属城市: 荆州市</div>
+                                <div>区县: 江陵县</div>
+                                <div>坐标: 经度: 112.4246, 纬度: 30.0422</div>
+                            </div>
+                            <div class="city-dynasty">历史背景: 楚（都城），汉、三国、晋、隋、唐（重要城市）</div>
+                        </div>
+
+                        <div class="city-card">
+                            <div class="city-name">襄樊</div>
+                            <div class="city-info">
+                                <div>省份: 湖北省</div>
+                                <div>所属城市: []</div>
+                                <div>区县: 无</div>
+                                <div>坐标: 经度: 114.3416, 纬度: 30.5462</div>
+                            </div>
+                            <div class="city-dynasty">历史背景: 汉、三国（军事重镇）</div>
+                        </div>
+
+                        <div class="city-card">
+                            <div class="city-name">汉中</div>
+                            <div class="city-info">
+                                <div>省份: 陕西省</div>
+                                <div>所属城市: 汉中市</div>
+                                <div>区县: 无</div>
+                                <div>坐标: 经度: 107.0232, 纬度: 33.0664</div>
+                            </div>
+                            <div class="city-dynasty">历史背景: 汉（刘邦发迹地），三国（军事重镇），唐、宋、明、清（区域中心）</div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+            <div class="timeline-item" data-dynasty="西晋">
+                <div class="timeline-header">
+                    <div class="dynasty-name">西晋</div>
+                    <div class="dynasty-period">公元266年 - 公元316年</div>
+                    <div class="dynasty-count">0 座古城</div>
+                </div>
+                <div class="city-list" id="cityList_西晋">
+                    <div class="city-grid">
+
+                        <div class="city-card">
+                            <div class="city-name">暂无数据</div>
+                            <div class="city-info">该朝代暂无收录的历史文化名城</div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+            <div class="timeline-item" data-dynasty="东晋">
+                <div class="timeline-header">
+                    <div class="dynasty-name">东晋</div>
+                    <div class="dynasty-period">公元317年 - 公元420年</div>
+                    <div class="dynasty-count">1 座古城</div>
+                </div>
+                <div class="city-list" id="cityList_东晋">
+                    <div class="city-grid">
+
+                        <div class="city-card">
+                            <div class="city-name">南京</div>
+                            <div class="city-info">
+                                <div>省份: 江苏省</div>
+                                <div>所属城市: 南京市</div>
+                                <div>区县: 无</div>
+                                <div>坐标: 经度: 118.7966, 纬度: 32.0593</div>
+                            </div>
+                            <div class="city-dynasty">历史背景: 东吴、东晋、南朝（宋齐梁陈）都城，明（初期都城）</div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+            <div class="timeline-item" data-dynasty="南北朝">
+                <div class="timeline-header">
+                    <div class="dynasty-name">南北朝</div>
+                    <div class="dynasty-period">公元420年 - 公元589年</div>
+                    <div class="dynasty-count">0 座古城</div>
+                </div>
+                <div class="city-list" id="cityList_南北朝">
+                    <div class="city-grid">
+
+                        <div class="city-card">
+                            <div class="city-name">暂无数据</div>
+                            <div class="city-info">该朝代暂无收录的历史文化名城</div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+            <div class="timeline-item" data-dynasty="隋朝">
+                <div class="timeline-header">
+                    <div class="dynasty-name">隋朝</div>
+                    <div class="dynasty-period">公元581年 - 公元618年</div>
+                    <div class="dynasty-count">3 座古城</div>
+                </div>
+                <div class="city-list" id="cityList_隋朝">
+                    <div class="city-grid">
+
+                        <div class="city-card">
+                            <div class="city-name">洛阳</div>
+                            <div class="city-info">
+                                <div>省份: 河南省</div>
+                                <div>所属城市: 洛阳市</div>
+                                <div>区县: 无</div>
+                                <div>坐标: 经度: 112.4539, 纬度: 34.6197</div>
+                            </div>
+                            <div class="city-dynasty">历史背景: 夏、商、周、汉、魏、晋、隋、唐（多朝都城）</div>
+                        </div>
+
+                        <div class="city-card">
+                            <div class="city-name">江陵</div>
+                            <div class="city-info">
+                                <div>省份: 湖北省</div>
+                                <div>所属城市: 荆州市</div>
+                                <div>区县: 江陵县</div>
+                                <div>坐标: 经度: 112.4246, 纬度: 30.0422</div>
+                            </div>
+                            <div class="city-dynasty">历史背景: 楚（都城），汉、三国、晋、隋、唐（重要城市）</div>
+                        </div>
+
+                        <div class="city-card">
+                            <div class="city-name">西安</div>
+                            <div class="city-info">
+                                <div>省份: 陕西省</div>
+                                <div>所属城市: 西安市</div>
+                                <div>区县: 无</div>
+                                <div>坐标: 经度: 108.9396, 纬度: 34.3432</div>
+                            </div>
+                            <div class="city-dynasty">历史背景: 周、秦、汉、隋、唐（都城），十三朝古都</div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+            <div class="timeline-item" data-dynasty="唐朝">
+                <div class="timeline-header">
+                    <div class="dynasty-name">唐朝</div>
+                    <div class="dynasty-period">公元618年 - 公元907年</div>
+                    <div class="dynasty-count">37 座古城</div>
+                </div>
+                <div class="city-list" id="cityList_唐朝">
+                    <div class="city-grid">
+
+                        <div class="city-card">
+                            <div class="city-name">建水</div>
+                            <div class="city-info">
+                                <div>省份: 云南省</div>
+                                <div>所属城市: 红河哈尼族彝族自治州</div>
+                                <div>区县: 建水县</div>
+                                <div>坐标: 经度: 102.8262, 纬度: 23.6358</div>
+                            </div>
+                            <div class="city-dynasty">历史背景: 唐、宋、明、清（滇南重镇）</div>
+                        </div>
+
+                        <div class="city-card">
+                            <div class="city-name">集安</div>
+                            <div class="city-info">
+                                <div>省份: 吉林省</div>
+                                <div>所属城市: 通化市</div>
+                                <div>区县: 集安市</div>
+                                <div>坐标: 经度: 126.1932, 纬度: 41.1258</div>
+                            </div>
+                            <div class="city-dynasty">历史背景: 高句丽（都城），汉、唐（边疆重镇）</div>
+                        </div>
+
+                        <div class="city-card">
+                            <div class="city-name">成都</div>
+                            <div class="city-info">
+                                <div>省份: 四川省</div>
+                                <div>所属城市: 成都市</div>
+                                <div>区县: 无</div>
+                                <div>坐标: 经度: 104.0663, 纬度: 30.5730</div>
+                            </div>
+                            <div class="city-dynasty">历史背景: 蜀（都城），汉、唐、宋、明、清（西南中心）</div>
+                        </div>
+
+                        <div class="city-card">
+                            <div class="city-name">乐山</div>
+                            <div class="city-info">
+                                <div>省份: 四川省</div>
+                                <div>所属城市: 乐山市</div>
+                                <div>区县: 无</div>
+                                <div>坐标: 经度: 103.7661, 纬度: 29.5523</div>
+                            </div>
+                            <div class="city-dynasty">历史背景: 汉、唐、宋、明、清（佛教文化名城，乐山大佛所在地）</div>
+                        </div>
+
+                        <div class="city-card">
+                            <div class="city-name">都江堰</div>
+                            <div class="city-info">
+                                <div>省份: 四川省</div>
+                                <div>所属城市: 成都市</div>
+                                <div>区县: 都江堰市</div>
+                                <div>坐标: 经度: 103.6472, 纬度: 30.9888</div>
+                            </div>
+                            <div class="city-dynasty">历史背景: 秦（李冰修建都江堰），汉、唐、宋、明、清（水利文化名城）</div>
+                        </div>
+
+                        <div class="city-card">
+                            <div class="city-name">泸州</div>
+                            <div class="city-info">
+                                <div>省份: 四川省</div>
+                                <div>所属城市: 泸州市</div>
+                                <div>区县: 无</div>
+                                <div>坐标: 经度: 105.4419, 纬度: 28.8710</div>
+                            </div>
+                            <div class="city-dynasty">历史背景: 汉、唐、宋、明、清（川南重镇，酒文化名城）</div>
+                        </div>
+
+                        <div class="city-card">
+                            <div class="city-name">阆中</div>
+                            <div class="city-info">
+                                <div>省份: 四川省</div>
+                                <div>所属城市: 南充市</div>
+                                <div>区县: 阆中市</div>
+                                <div>坐标: 经度: 106.0050, 纬度: 31.5584</div>
+                            </div>
+                            <div class="city-dynasty">历史背景: 汉、唐（川北古城）</div>
+                        </div>
+
+                        <div class="city-card">
+                            <div class="city-name">宜宾</div>
+                            <div class="city-info">
+                                <div>省份: 四川省</div>
+                                <div>所属城市: 宜宾市</div>
+                                <div>区县: 无</div>
+                                <div>坐标: 经度: 104.6428, 纬度: 28.7524</div>
+                            </div>
+                            <div class="city-dynasty">历史背景: 汉、唐（川南重镇）</div>
+                        </div>
+
+                        <div class="city-card">
+                            <div class="city-name">淄博</div>
+                            <div class="city-info">
+                                <div>省份: 山东省</div>
+                                <div>所属城市: 淄博市</div>
+                                <div>区县: 无</div>
+                                <div>坐标: 经度: 118.0550, 纬度: 36.8138</div>
+                            </div>
+                            <div class="city-dynasty">历史背景: 春秋（齐国属地），汉、唐、宋、明、清（历史城市）</div>
+                        </div>
+
+                        <div class="city-card">
+                            <div class="city-name">济南</div>
+                            <div class="city-info">
+                                <div>省份: 山东省</div>
+                                <div>所属城市: 济南市</div>
+                                <div>区县: 无</div>
+                                <div>坐标: 经度: 117.1201, 纬度: 36.6521</div>
+                            </div>
+                            <div class="city-dynasty">历史背景: 汉、唐（山东首府）</div>
+                        </div>
+
+                        <div class="city-card">
+                            <div class="city-name">新绛</div>
+                            <div class="city-info">
+                                <div>省份: 山西省</div>
+                                <div>所属城市: 运城市</div>
+                                <div>区县: 新绛县</div>
+                                <div>坐标: 经度: 111.2248, 纬度: 35.6160</div>
+                            </div>
+                            <div class="city-dynasty">历史背景: 唐、宋、明、清（晋南古城）</div>
+                        </div>
+
+                        <div class="city-card">
+                            <div class="city-name">代县</div>
+                            <div class="city-info">
+                                <div>省份: 山西省</div>
+                                <div>所属城市: 忻州市</div>
+                                <div>区县: 代县</div>
+                                <div>坐标: 经度: 112.9601, 纬度: 39.0668</div>
+                            </div>
+                            <div class="city-dynasty">历史背景: 汉、唐（军事要塞），明、清（雁门关所在地）</div>
+                        </div>
+
+                        <div class="city-card">
+                            <div class="city-name">潮州</div>
+                            <div class="city-info">
+                                <div>省份: 广东省</div>
+                                <div>所属城市: 潮州市</div>
+                                <div>区县: 无</div>
+                                <div>坐标: 经度: 116.6219, 纬度: 23.6577</div>
+                            </div>
+                            <div class="city-dynasty">历史背景: 唐、宋（潮汕文化中心）</div>
+                        </div>
+
+                        <div class="city-card">
+                            <div class="city-name">桂林</div>
+                            <div class="city-info">
+                                <div>省份: 广西壮族自治区</div>
+                                <div>所属城市: 桂林市</div>
+                                <div>区县: 无</div>
+                                <div>坐标: 经度: 110.1798, 纬度: 25.2356</div>
+                            </div>
+                            <div class="city-dynasty">历史背景: 汉、唐、宋、明、清（岭南文化名城）</div>
+                        </div>
+
+                        <div class="city-card">
+                            <div class="city-name">喀什</div>
+                            <div class="city-info">
+                                <div>省份: 新疆维吾尔自治区</div>
+                                <div>所属城市: 喀什地区</div>
+                                <div>区县: 无</div>
+                                <div>坐标: 经度: 75.9897, 纬度: 39.4705</div>
+                            </div>
+                            <div class="city-dynasty">历史背景: 汉、唐（西域古城）</div>
+                        </div>
+
+                        <div class="city-card">
+                            <div class="city-name">扬州</div>
+                            <div class="city-info">
+                                <div>省份: 江苏省</div>
+                                <div>所属城市: 扬州市</div>
+                                <div>区县: 无</div>
+                                <div>坐标: 经度: 119.4128, 纬度: 32.3944</div>
+                            </div>
+                            <div class="city-dynasty">历史背景: 汉、唐、宋、明、清（运河枢纽与商业重镇）</div>
+                        </div>
+
+                        <div class="city-card">
+                            <div class="city-name">赣州</div>
+                            <div class="city-info">
+                                <div>省份: 江西省</div>
+                                <div>所属城市: 赣州市</div>
+                                <div>区县: 无</div>
+                                <div>坐标: 经度: 114.9335, 纬度: 25.8311</div>
+                            </div>
+                            <div class="city-dynasty">历史背景: 唐、宋、明、清（赣南重镇）</div>
+                        </div>
+
+                        <div class="city-card">
+                            <div class="city-name">南昌</div>
+                            <div class="city-info">
+                                <div>省份: 江西省</div>
+                                <div>所属城市: 南昌市</div>
+                                <div>区县: 无</div>
+                                <div>坐标: 经度: 115.8580, 纬度: 28.6830</div>
+                            </div>
+                            <div class="city-dynasty">历史背景: 汉、唐（江西首府）</div>
+                        </div>
+
+                        <div class="city-card">
+                            <div class="city-name">濮阳</div>
+                            <div class="city-info">
+                                <div>省份: 河南省</div>
+                                <div>所属城市: 濮阳市</div>
+                                <div>区县: 无</div>
+                                <div>坐标: 经度: 115.0292, 纬度: 35.7627</div>
+                            </div>
+                            <div class="city-dynasty">历史背景: 夏、商（都城），汉、唐、宋、明、清（豫北古城）</div>
+                        </div>
+
+                        <div class="city-card">
+                            <div class="city-name">洛阳</div>
+                            <div class="city-info">
+                                <div>省份: 河南省</div>
+                                <div>所属城市: 洛阳市</div>
+                                <div>区县: 无</div>
+                                <div>坐标: 经度: 112.4539, 纬度: 34.6197</div>
+                            </div>
+                            <div class="city-dynasty">历史背景: 夏、商、周、汉、魏、晋、隋、唐（多朝都城）</div>
+                        </div>
+
+                        <div class="city-card">
+                            <div class="city-name">浚县</div>
+                            <div class="city-info">
+                                <div>省份: 河南省</div>
+                                <div>所属城市: 鹤壁市</div>
+                                <div>区县: 浚县</div>
+                                <div>坐标: 经度: 114.5506, 纬度: 35.6772</div>
+                            </div>
+                            <div class="city-dynasty">历史背景: 汉、唐、宋、明、清（豫北古城）</div>
+                        </div>
+
+                        <div class="city-card">
+                            <div class="city-name">衢州</div>
+                            <div class="city-info">
+                                <div>省份: 浙江省</div>
+                                <div>所属城市: 衢州市</div>
+                                <div>区县: 无</div>
+                                <div>坐标: 经度: 118.8593, 纬度: 28.9702</div>
+                            </div>
+                            <div class="city-dynasty">历史背景: 唐、宋、明、清（浙西重镇）</div>
+                        </div>
+
+                        <div class="city-card">
+                            <div class="city-name">临海</div>
+                            <div class="city-info">
+                                <div>省份: 浙江省</div>
+                                <div>所属城市: 台州市</div>
+                                <div>区县: 临海市</div>
+                                <div>坐标: 经度: 121.1446, 纬度: 28.8590</div>
+                            </div>
+                            <div class="city-dynasty">历史背景: 唐、宋、明、清（浙东古城）</div>
+                        </div>
+
+                        <div class="city-card">
+                            <div class="city-name">琼山</div>
+                            <div class="city-info">
+                                <div>省份: 海南省</div>
+                                <div>所属城市: 海口市</div>
+                                <div>区县: 琼山区</div>
+                                <div>坐标: 经度: 110.3843, 纬度: 19.9843</div>
+                            </div>
+                            <div class="city-dynasty">历史背景: 唐、宋、明、清（海南古城，现属海口）</div>
+                        </div>
+
+                        <div class="city-card">
+                            <div class="city-name">江陵</div>
+                            <div class="city-info">
+                                <div>省份: 湖北省</div>
+                                <div>所属城市: 荆州市</div>
+                                <div>区县: 江陵县</div>
+                                <div>坐标: 经度: 112.4246, 纬度: 30.0422</div>
+                            </div>
+                            <div class="city-dynasty">历史背景: 楚（都城），汉、三国、晋、隋、唐（重要城市）</div>
+                        </div>
+
+                        <div class="city-card">
+                            <div class="city-name">武汉</div>
+                            <div class="city-info">
+                                <div>省份: 湖北省</div>
+                                <div>所属城市: 武汉市</div>
+                                <div>区县: 无</div>
+                                <div>坐标: 经度: 114.3046, 纬度: 30.5934</div>
+                            </div>
+                            <div class="city-dynasty">历史背景: 汉、唐（华中重镇）</div>
+                        </div>
+
+                        <div class="city-card">
+                            <div class="city-name">长沙</div>
+                            <div class="city-info">
+                                <div>省份: 湖南省</div>
+                                <div>所属城市: 长沙市</div>
+                                <div>区县: 无</div>
+                                <div>坐标: 经度: 112.9389, 纬度: 28.2283</div>
+                            </div>
+                            <div class="city-dynasty">历史背景: 楚（重要城市），汉、唐、宋、明、清（区域中心）</div>
+                        </div>
+
+                        <div class="city-card">
+                            <div class="city-name">天水</div>
+                            <div class="city-info">
+                                <div>省份: 甘肃省</div>
+                                <div>所属城市: 天水市</div>
+                                <div>区县: 无</div>
+                                <div>坐标: 经度: 105.7248, 纬度: 34.5815</div>
+                            </div>
+                            <div class="city-dynasty">历史背景: 周、秦（发源地之一），汉、唐（丝路重镇）</div>
+                        </div>
+
+                        <div class="city-card">
+                            <div class="city-name">张掖</div>
+                            <div class="city-info">
+                                <div>省份: 甘肃省</div>
+                                <div>所属城市: 张掖市</div>
+                                <div>区县: 无</div>
+                                <div>坐标: 经度: 100.4499, 纬度: 38.9248</div>
+                            </div>
+                            <div class="city-dynasty">历史背景: 汉、唐（丝路古城）</div>
+                        </div>
+
+                        <div class="city-card">
+                            <div class="city-name">敦煌</div>
+                            <div class="city-info">
+                                <div>省份: 甘肃省</div>
+                                <div>所属城市: 酒泉市</div>
+                                <div>区县: 敦煌市</div>
+                                <div>坐标: 经度: 94.6620, 纬度: 40.1421</div>
+                            </div>
+                            <div class="city-dynasty">历史背景: 汉、唐（丝路明珠）</div>
+                        </div>
+
+                        <div class="city-card">
+                            <div class="city-name">武威</div>
+                            <div class="city-info">
+                                <div>省份: 甘肃省</div>
+                                <div>所属城市: 武威市</div>
+                                <div>区县: 无</div>
+                                <div>坐标: 经度: 102.6378, 纬度: 37.9290</div>
+                            </div>
+                            <div class="city-dynasty">历史背景: 汉、唐（丝路古城）</div>
+                        </div>
+
+                        <div class="city-card">
+                            <div class="city-name">长汀</div>
+                            <div class="city-info">
+                                <div>省份: 福建省</div>
+                                <div>所属城市: 龙岩市</div>
+                                <div>区县: 长汀县</div>
+                                <div>坐标: 经度: 116.3576, 纬度: 25.8335</div>
+                            </div>
+                            <div class="city-dynasty">历史背景: 唐、宋、明、清（闽西重镇，客家文化中心）</div>
+                        </div>
+
+                        <div class="city-card">
+                            <div class="city-name">镇远</div>
+                            <div class="city-info">
+                                <div>省份: 贵州省</div>
+                                <div>所属城市: 黔东南苗族侗族自治州</div>
+                                <div>区县: 镇远县</div>
+                                <div>坐标: 经度: 108.4295, 纬度: 27.0490</div>
+                            </div>
+                            <div class="city-dynasty">历史背景: 汉、唐（黔东古城）</div>
+                        </div>
+
+                        <div class="city-card">
+                            <div class="city-name">西安</div>
+                            <div class="city-info">
+                                <div>省份: 陕西省</div>
+                                <div>所属城市: 西安市</div>
+                                <div>区县: 无</div>
+                                <div>坐标: 经度: 108.9396, 纬度: 34.3432</div>
+                            </div>
+                            <div class="city-dynasty">历史背景: 周、秦、汉、隋、唐（都城），十三朝古都</div>
+                        </div>
+
+                        <div class="city-card">
+                            <div class="city-name">咸阳</div>
+                            <div class="city-info">
+                                <div>省份: 陕西省</div>
+                                <div>所属城市: 咸阳市</div>
+                                <div>区县: 无</div>
+                                <div>坐标: 经度: 108.7088, 纬度: 34.3299</div>
+                            </div>
+                            <div class="city-dynasty">历史背景: 秦（都城），汉、唐（京畿重镇）</div>
+                        </div>
+
+                        <div class="city-card">
+                            <div class="city-name">汉中</div>
+                            <div class="city-info">
+                                <div>省份: 陕西省</div>
+                                <div>所属城市: 汉中市</div>
+                                <div>区县: 无</div>
+                                <div>坐标: 经度: 107.0232, 纬度: 33.0664</div>
+                            </div>
+                            <div class="city-dynasty">历史背景: 汉（刘邦发迹地），三国（军事重镇），唐、宋、明、清（区域中心）</div>
+                        </div>
+
+                        <div class="city-card">
+                            <div class="city-name">榆林</div>
+                            <div class="city-info">
+                                <div>省份: 陕西省</div>
+                                <div>所属城市: 榆林市</div>
+                                <div>区县: 无</div>
+                                <div>坐标: 经度: 109.7341, 纬度: 38.2858</div>
+                            </div>
+                            <div class="city-dynasty">历史背景: 汉、唐（陕北重镇）</div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+            <div class="timeline-item" data-dynasty="五代">
+                <div class="timeline-header">
+                    <div class="dynasty-name">五代</div>
+                    <div class="dynasty-period">公元907年 - 公元979年</div>
+                    <div class="dynasty-count">0 座古城</div>
+                </div>
+                <div class="city-list" id="cityList_五代">
+                    <div class="city-grid">
+
+                        <div class="city-card">
+                            <div class="city-name">暂无数据</div>
+                            <div class="city-info">该朝代暂无收录的历史文化名城</div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+            <div class="timeline-item" data-dynasty="宋朝">
+                <div class="timeline-header">
+                    <div class="dynasty-name">宋朝</div>
+                    <div class="dynasty-period">公元960年 - 公元1279年</div>
+                    <div class="dynasty-count">37 座古城</div>
+                </div>
+                <div class="city-list" id="cityList_宋朝">
+                    <div class="city-grid">
+
+                        <div class="city-card">
+                            <div class="city-name">上海</div>
+                            <div class="city-info">
+                                <div>省份: 上海市</div>
+                                <div>所属城市: 上海市</div>
+                                <div>区县: 无</div>
+                                <div>坐标: 经度: 121.4737, 纬度: 31.2305</div>
+                            </div>
+                            <div class="city-dynasty">历史背景: 宋、明、清（沿海城镇），近代（国际大都市）</div>
+                        </div>
+
+                        <div class="city-card">
+                            <div class="city-name">建水</div>
+                            <div class="city-info">
+                                <div>省份: 云南省</div>
+                                <div>所属城市: 红河哈尼族彝族自治州</div>
+                                <div>区县: 建水县</div>
+                                <div>坐标: 经度: 102.8262, 纬度: 23.6358</div>
+                            </div>
+                            <div class="city-dynasty">历史背景: 唐、宋、明、清（滇南重镇）</div>
+                        </div>
+
+                        <div class="city-card">
+                            <div class="city-name">成都</div>
+                            <div class="city-info">
+                                <div>省份: 四川省</div>
+                                <div>所属城市: 成都市</div>
+                                <div>区县: 无</div>
+                                <div>坐标: 经度: 104.0663, 纬度: 30.5730</div>
+                            </div>
+                            <div class="city-dynasty">历史背景: 蜀（都城），汉、唐、宋、明、清（西南中心）</div>
+                        </div>
+
+                        <div class="city-card">
+                            <div class="city-name">乐山</div>
+                            <div class="city-info">
+                                <div>省份: 四川省</div>
+                                <div>所属城市: 乐山市</div>
+                                <div>区县: 无</div>
+                                <div>坐标: 经度: 103.7661, 纬度: 29.5523</div>
+                            </div>
+                            <div class="city-dynasty">历史背景: 汉、唐、宋、明、清（佛教文化名城，乐山大佛所在地）</div>
+                        </div>
+
+                        <div class="city-card">
+                            <div class="city-name">都江堰</div>
+                            <div class="city-info">
+                                <div>省份: 四川省</div>
+                                <div>所属城市: 成都市</div>
+                                <div>区县: 都江堰市</div>
+                                <div>坐标: 经度: 103.6472, 纬度: 30.9888</div>
+                            </div>
+                            <div class="city-dynasty">历史背景: 秦（李冰修建都江堰），汉、唐、宋、明、清（水利文化名城）</div>
+                        </div>
+
+                        <div class="city-card">
+                            <div class="city-name">泸州</div>
+                            <div class="city-info">
+                                <div>省份: 四川省</div>
+                                <div>所属城市: 泸州市</div>
+                                <div>区县: 无</div>
+                                <div>坐标: 经度: 105.4419, 纬度: 28.8710</div>
+                            </div>
+                            <div class="city-dynasty">历史背景: 汉、唐、宋、明、清（川南重镇，酒文化名城）</div>
+                        </div>
+
+                        <div class="city-card">
+                            <div class="city-name">歙县</div>
+                            <div class="city-info">
+                                <div>省份: 安徽省</div>
+                                <div>所属城市: 黄山市</div>
+                                <div>区县: 歙县</div>
+                                <div>坐标: 经度: 118.4153, 纬度: 29.8614</div>
+                            </div>
+                            <div class="city-dynasty">历史背景: 宋、明、清（徽州文化中心）</div>
+                        </div>
+
+                        <div class="city-card">
+                            <div class="city-name">聊城</div>
+                            <div class="city-info">
+                                <div>省份: 山东省</div>
+                                <div>所属城市: 聊城市</div>
+                                <div>区县: 无</div>
+                                <div>坐标: 经度: 115.9852, 纬度: 36.4559</div>
+                            </div>
+                            <div class="city-dynasty">历史背景: 宋、明、清（运河古城）</div>
+                        </div>
+
+                        <div class="city-card">
+                            <div class="city-name">淄博</div>
+                            <div class="city-info">
+                                <div>省份: 山东省</div>
+                                <div>所属城市: 淄博市</div>
+                                <div>区县: 无</div>
+                                <div>坐标: 经度: 118.0550, 纬度: 36.8138</div>
+                            </div>
+                            <div class="city-dynasty">历史背景: 春秋（齐国属地），汉、唐、宋、明、清（历史城市）</div>
+                        </div>
+
+                        <div class="city-card">
+                            <div class="city-name">新绛</div>
+                            <div class="city-info">
+                                <div>省份: 山西省</div>
+                                <div>所属城市: 运城市</div>
+                                <div>区县: 新绛县</div>
+                                <div>坐标: 经度: 111.2248, 纬度: 35.6160</div>
+                            </div>
+                            <div class="city-dynasty">历史背景: 唐、宋、明、清（晋南古城）</div>
+                        </div>
+
+                        <div class="city-card">
+                            <div class="city-name">潮州</div>
+                            <div class="city-info">
+                                <div>省份: 广东省</div>
+                                <div>所属城市: 潮州市</div>
+                                <div>区县: 无</div>
+                                <div>坐标: 经度: 116.6219, 纬度: 23.6577</div>
+                            </div>
+                            <div class="city-dynasty">历史背景: 唐、宋（潮汕文化中心）</div>
+                        </div>
+
+                        <div class="city-card">
+                            <div class="city-name">桂林</div>
+                            <div class="city-info">
+                                <div>省份: 广西壮族自治区</div>
+                                <div>所属城市: 桂林市</div>
+                                <div>区县: 无</div>
+                                <div>坐标: 经度: 110.1798, 纬度: 25.2356</div>
+                            </div>
+                            <div class="city-dynasty">历史背景: 汉、唐、宋、明、清（岭南文化名城）</div>
+                        </div>
+
+                        <div class="city-card">
+                            <div class="city-name">扬州</div>
+                            <div class="city-info">
+                                <div>省份: 江苏省</div>
+                                <div>所属城市: 扬州市</div>
+                                <div>区县: 无</div>
+                                <div>坐标: 经度: 119.4128, 纬度: 32.3944</div>
+                            </div>
+                            <div class="city-dynasty">历史背景: 汉、唐、宋、明、清（运河枢纽与商业重镇）</div>
+                        </div>
+
+                        <div class="city-card">
+                            <div class="city-name">苏州</div>
+                            <div class="city-info">
+                                <div>省份: 江苏省</div>
+                                <div>所属城市: 苏州市</div>
+                                <div>区县: 无</div>
+                                <div>坐标: 经度: 120.5853, 纬度: 31.2998</div>
+                            </div>
+                            <div class="city-dynasty">历史背景: 春秋（吴国都城），宋、明、清（江南繁华都市）</div>
+                        </div>
+
+                        <div class="city-card">
+                            <div class="city-name">南京</div>
+                            <div class="city-info">
+                                <div>省份: 江苏省</div>
+                                <div>所属城市: 南京市</div>
+                                <div>区县: 无</div>
+                                <div>坐标: 经度: 118.7966, 纬度: 32.0593</div>
+                            </div>
+                            <div class="city-dynasty">历史背景: 东吴、东晋、南朝（宋齐梁陈）都城，明（初期都城）</div>
+                        </div>
+
+                        <div class="city-card">
+                            <div class="city-name">镇江</div>
+                            <div class="city-info">
+                                <div>省份: 江苏省</div>
+                                <div>所属城市: 镇江市</div>
+                                <div>区县: 无</div>
+                                <div>坐标: 经度: 119.4244, 纬度: 32.1881</div>
+                            </div>
+                            <div class="city-dynasty">历史背景: 春秋（吴国属地），宋、明、清（江南古城）</div>
+                        </div>
+
+                        <div class="city-card">
+                            <div class="city-name">常熟</div>
+                            <div class="city-info">
+                                <div>省份: 江苏省</div>
+                                <div>所属城市: 苏州市</div>
+                                <div>区县: 常熟市</div>
+                                <div>坐标: 经度: 120.7525, 纬度: 31.6560</div>
+                            </div>
+                            <div class="city-dynasty">历史背景: 宋、明、清（江南文化名城）</div>
+                        </div>
+
+                        <div class="city-card">
+                            <div class="city-name">淮安</div>
+                            <div class="city-info">
+                                <div>省份: 江苏省</div>
+                                <div>所属城市: 淮安市</div>
+                                <div>区县: 无</div>
+                                <div>坐标: 经度: 119.1132, 纬度: 33.5515</div>
+                            </div>
+                            <div class="city-dynasty">历史背景: 宋、明、清（运河古城）</div>
+                        </div>
+
+                        <div class="city-card">
+                            <div class="city-name">景德镇</div>
+                            <div class="city-info">
+                                <div>省份: 江西省</div>
+                                <div>所属城市: 景德镇市</div>
+                                <div>区县: 无</div>
+                                <div>坐标: 经度: 117.1849, 纬度: 29.2744</div>
+                            </div>
+                            <div class="city-dynasty">历史背景: 宋至清（瓷都，官窑所在地）</div>
+                        </div>
+
+                        <div class="city-card">
+                            <div class="city-name">赣州</div>
+                            <div class="city-info">
+                                <div>省份: 江西省</div>
+                                <div>所属城市: 赣州市</div>
+                                <div>区县: 无</div>
+                                <div>坐标: 经度: 114.9335, 纬度: 25.8311</div>
+                            </div>
+                            <div class="city-dynasty">历史背景: 唐、宋、明、清（赣南重镇）</div>
+                        </div>
+
+                        <div class="city-card">
+                            <div class="city-name">保定</div>
+                            <div class="city-info">
+                                <div>省份: 河北省</div>
+                                <div>所属城市: 保定市</div>
+                                <div>区县: 无</div>
+                                <div>坐标: 经度: 115.4645, 纬度: 38.8745</div>
+                            </div>
+                            <div class="city-dynasty">历史背景: 宋、明、清（直隶重镇），近代（直隶省会）</div>
+                        </div>
+
+                        <div class="city-card">
+                            <div class="city-name">濮阳</div>
+                            <div class="city-info">
+                                <div>省份: 河南省</div>
+                                <div>所属城市: 濮阳市</div>
+                                <div>区县: 无</div>
+                                <div>坐标: 经度: 115.0292, 纬度: 35.7627</div>
+                            </div>
+                            <div class="city-dynasty">历史背景: 夏、商（都城），汉、唐、宋、明、清（豫北古城）</div>
+                        </div>
+
+                        <div class="city-card">
+                            <div class="city-name">开封</div>
+                            <div class="city-info">
+                                <div>省份: 河南省</div>
+                                <div>所属城市: 开封市</div>
+                                <div>区县: 无</div>
+                                <div>坐标: 经度: 114.3143, 纬度: 34.7981</div>
+                            </div>
+                            <div class="city-dynasty">历史背景: 魏、后梁、后晋、后汉、后周、北宋（都城）</div>
+                        </div>
+
+                        <div class="city-card">
+                            <div class="city-name">浚县</div>
+                            <div class="city-info">
+                                <div>省份: 河南省</div>
+                                <div>所属城市: 鹤壁市</div>
+                                <div>区县: 浚县</div>
+                                <div>坐标: 经度: 114.5506, 纬度: 35.6772</div>
+                            </div>
+                            <div class="city-dynasty">历史背景: 汉、唐、宋、明、清（豫北古城）</div>
+                        </div>
+
+                        <div class="city-card">
+                            <div class="city-name">商丘</div>
+                            <div class="city-info">
+                                <div>省份: 河南省</div>
+                                <div>所属城市: 商丘市</div>
+                                <div>区县: 无</div>
+                                <div>坐标: 经度: 115.6564, 纬度: 34.4152</div>
+                            </div>
+                            <div class="city-dynasty">历史背景: 商、宋（古都）</div>
+                        </div>
+
+                        <div class="city-card">
+                            <div class="city-name">杭州</div>
+                            <div class="city-info">
+                                <div>省份: 浙江省</div>
+                                <div>所属城市: 杭州市</div>
+                                <div>区县: 无</div>
+                                <div>坐标: 经度: 120.2108, 纬度: 30.2460</div>
+                            </div>
+                            <div class="city-dynasty">历史背景: 南宋（都城），吴越国（都城）</div>
+                        </div>
+
+                        <div class="city-card">
+                            <div class="city-name">绍兴</div>
+                            <div class="city-info">
+                                <div>省份: 浙江省</div>
+                                <div>所属城市: 绍兴市</div>
+                                <div>区县: 无</div>
+                                <div>坐标: 经度: 120.5829, 纬度: 30.0515</div>
+                            </div>
+                            <div class="city-dynasty">历史背景: 春秋（越国都城），南宋（陪都）</div>
+                        </div>
+
+                        <div class="city-card">
+                            <div class="city-name">衢州</div>
+                            <div class="city-info">
+                                <div>省份: 浙江省</div>
+                                <div>所属城市: 衢州市</div>
+                                <div>区县: 无</div>
+                                <div>坐标: 经度: 118.8593, 纬度: 28.9702</div>
+                            </div>
+                            <div class="city-dynasty">历史背景: 唐、宋、明、清（浙西重镇）</div>
+                        </div>
+
+                        <div class="city-card">
+                            <div class="city-name">临海</div>
+                            <div class="city-info">
+                                <div>省份: 浙江省</div>
+                                <div>所属城市: 台州市</div>
+                                <div>区县: 临海市</div>
+                                <div>坐标: 经度: 121.1446, 纬度: 28.8590</div>
+                            </div>
+                            <div class="city-dynasty">历史背景: 唐、宋、明、清（浙东古城）</div>
+                        </div>
+
+                        <div class="city-card">
+                            <div class="city-name">宁波</div>
+                            <div class="city-info">
+                                <div>省份: 浙江省</div>
+                                <div>所属城市: 宁波市</div>
+                                <div>区县: 无</div>
+                                <div>坐标: 经度: 121.6245, 纬度: 29.8603</div>
+                            </div>
+                            <div class="city-dynasty">历史背景: 宋、明、清（港口名城）</div>
+                        </div>
+
+                        <div class="city-card">
+                            <div class="city-name">琼山</div>
+                            <div class="city-info">
+                                <div>省份: 海南省</div>
+                                <div>所属城市: 海口市</div>
+                                <div>区县: 琼山区</div>
+                                <div>坐标: 经度: 110.3843, 纬度: 19.9843</div>
+                            </div>
+                            <div class="city-dynasty">历史背景: 唐、宋、明、清（海南古城，现属海口）</div>
+                        </div>
+
+                        <div class="city-card">
+                            <div class="city-name">长沙</div>
+                            <div class="city-info">
+                                <div>省份: 湖南省</div>
+                                <div>所属城市: 长沙市</div>
+                                <div>区县: 无</div>
+                                <div>坐标: 经度: 112.9389, 纬度: 28.2283</div>
+                            </div>
+                            <div class="city-dynasty">历史背景: 楚（重要城市），汉、唐、宋、明、清（区域中心）</div>
+                        </div>
+
+                        <div class="city-card">
+                            <div class="city-name">泉州</div>
+                            <div class="city-info">
+                                <div>省份: 福建省</div>
+                                <div>所属城市: 泉州市</div>
+                                <div>区县: 无</div>
+                                <div>坐标: 经度: 118.6757, 纬度: 24.8745</div>
+                            </div>
+                            <div class="city-dynasty">历史背景: 宋、元（海上丝绸之路重要港口）</div>
+                        </div>
+
+                        <div class="city-card">
+                            <div class="city-name">长汀</div>
+                            <div class="city-info">
+                                <div>省份: 福建省</div>
+                                <div>所属城市: 龙岩市</div>
+                                <div>区县: 长汀县</div>
+                                <div>坐标: 经度: 116.3576, 纬度: 25.8335</div>
+                            </div>
+                            <div class="city-dynasty">历史背景: 唐、宋、明、清（闽西重镇，客家文化中心）</div>
+                        </div>
+
+                        <div class="city-card">
+                            <div class="city-name">福州</div>
+                            <div class="city-info">
+                                <div>省份: 福建省</div>
+                                <div>所属城市: 福州市</div>
+                                <div>区县: 无</div>
+                                <div>坐标: 经度: 119.2964, 纬度: 26.0743</div>
+                            </div>
+                            <div class="city-dynasty">历史背景: 宋、明、清（福建首府）</div>
+                        </div>
+
+                        <div class="city-card">
+                            <div class="city-name">漳州</div>
+                            <div class="city-info">
+                                <div>省份: 福建省</div>
+                                <div>所属城市: 漳州市</div>
+                                <div>区县: 无</div>
+                                <div>坐标: 经度: 117.6473, 纬度: 24.5153</div>
+                            </div>
+                            <div class="city-dynasty">历史背景: 宋、明、清（闽南古城）</div>
+                        </div>
+
+                        <div class="city-card">
+                            <div class="city-name">汉中</div>
+                            <div class="city-info">
+                                <div>省份: 陕西省</div>
+                                <div>所属城市: 汉中市</div>
+                                <div>区县: 无</div>
+                                <div>坐标: 经度: 107.0232, 纬度: 33.0664</div>
+                            </div>
+                            <div class="city-dynasty">历史背景: 汉（刘邦发迹地），三国（军事重镇），唐、宋、明、清（区域中心）</div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+            <div class="timeline-item" data-dynasty="辽朝">
+                <div class="timeline-header">
+                    <div class="dynasty-name">辽朝</div>
+                    <div class="dynasty-period">公元907年 - 公元1125年</div>
+                    <div class="dynasty-count">1 座古城</div>
+                </div>
+                <div class="city-list" id="cityList_辽朝">
+                    <div class="city-grid">
+
+                        <div class="city-card">
+                            <div class="city-name">大同</div>
+                            <div class="city-info">
+                                <div>省份: 山西省</div>
+                                <div>所属城市: 大同市</div>
+                                <div>区县: 无</div>
+                                <div>坐标: 经度: 113.3667, 纬度: 40.0971</div>
+                            </div>
+                            <div class="city-dynasty">历史背景: 北魏（都城），辽、金（陪都）</div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+            <div class="timeline-item" data-dynasty="金朝">
+                <div class="timeline-header">
+                    <div class="dynasty-name">金朝</div>
+                    <div class="dynasty-period">公元1115年 - 公元1234年</div>
+                    <div class="dynasty-count">1 座古城</div>
+                </div>
+                <div class="city-list" id="cityList_金朝">
+                    <div class="city-grid">
+
+                        <div class="city-card">
+                            <div class="city-name">大同</div>
+                            <div class="city-info">
+                                <div>省份: 山西省</div>
+                                <div>所属城市: 大同市</div>
+                                <div>区县: 无</div>
+                                <div>坐标: 经度: 113.3667, 纬度: 40.0971</div>
+                            </div>
+                            <div class="city-dynasty">历史背景: 北魏（都城），辽、金（陪都）</div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+            <div class="timeline-item" data-dynasty="元朝">
+                <div class="timeline-header">
+                    <div class="dynasty-name">元朝</div>
+                    <div class="dynasty-period">公元1271年 - 公元1368年</div>
+                    <div class="dynasty-count">5 座古城</div>
+                </div>
+                <div class="city-list" id="cityList_元朝">
+                    <div class="city-grid">
+
+                        <div class="city-card">
+                            <div class="city-name">丽江</div>
+                            <div class="city-info">
+                                <div>省份: 云南省</div>
+                                <div>所属城市: 丽江市</div>
+                                <div>区县: 无</div>
+                                <div>坐标: 经度: 100.2259, 纬度: 26.8552</div>
+                            </div>
+                            <div class="city-dynasty">历史背景: 元、明（纳西族古城）</div>
+                        </div>
+
+                        <div class="city-card">
+                            <div class="city-name">北京</div>
+                            <div class="city-info">
+                                <div>省份: 北京市</div>
+                                <div>所属城市: 北京市</div>
+                                <div>区县: 无</div>
+                                <div>坐标: 经度: 116.4074, 纬度: 39.9042</div>
+                            </div>
+                            <div class="city-dynasty">历史背景: 元、明、清（都城），历史悠久</div>
+                        </div>
+
+                        <div class="city-card">
+                            <div class="city-name">泉州</div>
+                            <div class="city-info">
+                                <div>省份: 福建省</div>
+                                <div>所属城市: 泉州市</div>
+                                <div>区县: 无</div>
+                                <div>坐标: 经度: 118.6757, 纬度: 24.8745</div>
+                            </div>
+                            <div class="city-dynasty">历史背景: 宋、元（海上丝绸之路重要港口）</div>
+                        </div>
+
+                        <div class="city-card">
+                            <div class="city-name">拉萨</div>
+                            <div class="city-info">
+                                <div>省份: 西藏自治区</div>
+                                <div>所属城市: 拉萨市</div>
+                                <div>区县: 无</div>
+                                <div>坐标: 经度: 91.1719, 纬度: 29.6535</div>
+                            </div>
+                            <div class="city-dynasty">历史背景: 吐蕃（都城），元至清（藏区政治文化中心）</div>
+                        </div>
+
+                        <div class="city-card">
+                            <div class="city-name">日喀则</div>
+                            <div class="city-info">
+                                <div>省份: 西藏自治区</div>
+                                <div>所属城市: 日喀则市</div>
+                                <div>区县: 无</div>
+                                <div>坐标: 经度: 88.8804, 纬度: 29.2668</div>
+                            </div>
+                            <div class="city-dynasty">历史背景: 元、明（后藏重镇）</div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+            <div class="timeline-item" data-dynasty="明朝">
+                <div class="timeline-header">
+                    <div class="dynasty-name">明朝</div>
+                    <div class="dynasty-period">公元1368年 - 公元1644年</div>
+                    <div class="dynasty-count">50 座古城</div>
+                </div>
+                <div class="city-list" id="cityList_明朝">
+                    <div class="city-grid">
+
+                        <div class="city-card">
+                            <div class="city-name">上海</div>
+                            <div class="city-info">
+                                <div>省份: 上海市</div>
+                                <div>所属城市: 上海市</div>
+                                <div>区县: 无</div>
+                                <div>坐标: 经度: 121.4737, 纬度: 31.2305</div>
+                            </div>
+                            <div class="city-dynasty">历史背景: 宋、明、清（沿海城镇），近代（国际大都市）</div>
+                        </div>
+
+                        <div class="city-card">
+                            <div class="city-name">昆明</div>
+                            <div class="city-info">
+                                <div>省份: 云南省</div>
+                                <div>所属城市: 昆明市</div>
+                                <div>区县: 无</div>
+                                <div>坐标: 经度: 102.8337, 纬度: 24.8815</div>
+                            </div>
+                            <div class="city-dynasty">历史背景: 南诏、大理（重要城市），明、清（云南首府）</div>
+                        </div>
+
+                        <div class="city-card">
+                            <div class="city-name">建水</div>
+                            <div class="city-info">
+                                <div>省份: 云南省</div>
+                                <div>所属城市: 红河哈尼族彝族自治州</div>
+                                <div>区县: 建水县</div>
+                                <div>坐标: 经度: 102.8262, 纬度: 23.6358</div>
+                            </div>
+                            <div class="city-dynasty">历史背景: 唐、宋、明、清（滇南重镇）</div>
+                        </div>
+
+                        <div class="city-card">
+                            <div class="city-name">巍山</div>
+                            <div class="city-info">
+                                <div>省份: 云南省</div>
+                                <div>所属城市: 大理白族自治州</div>
+                                <div>区县: 巍山彝族回族自治县</div>
+                                <div>坐标: 经度: 100.3070, 纬度: 25.2271</div>
+                            </div>
+                            <div class="city-dynasty">历史背景: 南诏（发祥地），明、清（古城）</div>
+                        </div>
+
+                        <div class="city-card">
+                            <div class="city-name">丽江</div>
+                            <div class="city-info">
+                                <div>省份: 云南省</div>
+                                <div>所属城市: 丽江市</div>
+                                <div>区县: 无</div>
+                                <div>坐标: 经度: 100.2259, 纬度: 26.8552</div>
+                            </div>
+                            <div class="city-dynasty">历史背景: 元、明（纳西族古城）</div>
+                        </div>
+
+                        <div class="city-card">
+                            <div class="city-name">呼和浩特</div>
+                            <div class="city-info">
+                                <div>省份: 内蒙古自治区</div>
+                                <div>所属城市: 呼和浩特市</div>
+                                <div>区县: 无</div>
+                                <div>坐标: 经度: 111.7488, 纬度: 40.8421</div>
+                            </div>
+                            <div class="city-dynasty">历史背景: 明、清（蒙古族聚居地）</div>
+                        </div>
+
+                        <div class="city-card">
+                            <div class="city-name">北京</div>
+                            <div class="city-info">
+                                <div>省份: 北京市</div>
+                                <div>所属城市: 北京市</div>
+                                <div>区县: 无</div>
+                                <div>坐标: 经度: 116.4074, 纬度: 39.9042</div>
+                            </div>
+                            <div class="city-dynasty">历史背景: 元、明、清（都城），历史悠久</div>
+                        </div>
+
+                        <div class="city-card">
+                            <div class="city-name">吉林</div>
+                            <div class="city-info">
+                                <div>省份: 吉林省</div>
+                                <div>所属城市: 吉林市</div>
+                                <div>区县: 无</div>
+                                <div>坐标: 经度: 126.5497, 纬度: 43.8381</div>
+                            </div>
+                            <div class="city-dynasty">历史背景: 明、清（满族聚居地），近代（东北重镇）</div>
+                        </div>
+
+                        <div class="city-card">
+                            <div class="city-name">成都</div>
+                            <div class="city-info">
+                                <div>省份: 四川省</div>
+                                <div>所属城市: 成都市</div>
+                                <div>区县: 无</div>
+                                <div>坐标: 经度: 104.0663, 纬度: 30.5730</div>
+                            </div>
+                            <div class="city-dynasty">历史背景: 蜀（都城），汉、唐、宋、明、清（西南中心）</div>
+                        </div>
+
+                        <div class="city-card">
+                            <div class="city-name">乐山</div>
+                            <div class="city-info">
+                                <div>省份: 四川省</div>
+                                <div>所属城市: 乐山市</div>
+                                <div>区县: 无</div>
+                                <div>坐标: 经度: 103.7661, 纬度: 29.5523</div>
+                            </div>
+                            <div class="city-dynasty">历史背景: 汉、唐、宋、明、清（佛教文化名城，乐山大佛所在地）</div>
+                        </div>
+
+                        <div class="city-card">
+                            <div class="city-name">都江堰</div>
+                            <div class="city-info">
+                                <div>省份: 四川省</div>
+                                <div>所属城市: 成都市</div>
+                                <div>区县: 都江堰市</div>
+                                <div>坐标: 经度: 103.6472, 纬度: 30.9888</div>
+                            </div>
+                            <div class="city-dynasty">历史背景: 秦（李冰修建都江堰），汉、唐、宋、明、清（水利文化名城）</div>
+                        </div>
+
+                        <div class="city-card">
+                            <div class="city-name">泸州</div>
+                            <div class="city-info">
+                                <div>省份: 四川省</div>
+                                <div>所属城市: 泸州市</div>
+                                <div>区县: 无</div>
+                                <div>坐标: 经度: 105.4419, 纬度: 28.8710</div>
+                            </div>
+                            <div class="city-dynasty">历史背景: 汉、唐、宋、明、清（川南重镇，酒文化名城）</div>
+                        </div>
+
+                        <div class="city-card">
+                            <div class="city-name">自贡</div>
+                            <div class="city-info">
+                                <div>省份: 四川省</div>
+                                <div>所属城市: 自贡市</div>
+                                <div>区县: 无</div>
+                                <div>坐标: 经度: 104.7793, 纬度: 29.3392</div>
+                            </div>
+                            <div class="city-dynasty">历史背景: 明、清（盐都）</div>
+                        </div>
+
+                        <div class="city-card">
+                            <div class="city-name">天津</div>
+                            <div class="city-info">
+                                <div>省份: 天津市</div>
+                                <div>所属城市: 天津市</div>
+                                <div>区县: 无</div>
+                                <div>坐标: 经度: 117.2015, 纬度: 39.0853</div>
+                            </div>
+                            <div class="city-dynasty">历史背景: 明、清（漕运重镇），近代（通商口岸）</div>
+                        </div>
+
+                        <div class="city-card">
+                            <div class="city-name">歙县</div>
+                            <div class="city-info">
+                                <div>省份: 安徽省</div>
+                                <div>所属城市: 黄山市</div>
+                                <div>区县: 歙县</div>
+                                <div>坐标: 经度: 118.4153, 纬度: 29.8614</div>
+                            </div>
+                            <div class="city-dynasty">历史背景: 宋、明、清（徽州文化中心）</div>
+                        </div>
+
+                        <div class="city-card">
+                            <div class="city-name">青岛</div>
+                            <div class="city-info">
+                                <div>省份: 山东省</div>
+                                <div>所属城市: 青岛市</div>
+                                <div>区县: 无</div>
+                                <div>坐标: 经度: 120.3827, 纬度: 36.0669</div>
+                            </div>
+                            <div class="city-dynasty">历史背景: 明（海防要地），近代（通商口岸，历史文化名城）</div>
+                        </div>
+
+                        <div class="city-card">
+                            <div class="city-name">聊城</div>
+                            <div class="city-info">
+                                <div>省份: 山东省</div>
+                                <div>所属城市: 聊城市</div>
+                                <div>区县: 无</div>
+                                <div>坐标: 经度: 115.9852, 纬度: 36.4559</div>
+                            </div>
+                            <div class="city-dynasty">历史背景: 宋、明、清（运河古城）</div>
+                        </div>
+
+                        <div class="city-card">
+                            <div class="city-name">邹城</div>
+                            <div class="city-info">
+                                <div>省份: 山东省</div>
+                                <div>所属城市: 济宁市</div>
+                                <div>区县: 邹城市</div>
+                                <div>坐标: 经度: 117.0074, 纬度: 35.4025</div>
+                            </div>
+                            <div class="city-dynasty">历史背景: 春秋（邾国都城），明、清（儒家文化名城）</div>
+                        </div>
+
+                        <div class="city-card">
+                            <div class="city-name">淄博</div>
+                            <div class="city-info">
+                                <div>省份: 山东省</div>
+                                <div>所属城市: 淄博市</div>
+                                <div>区县: 无</div>
+                                <div>坐标: 经度: 118.0550, 纬度: 36.8138</div>
+                            </div>
+                            <div class="city-dynasty">历史背景: 春秋（齐国属地），汉、唐、宋、明、清（历史城市）</div>
+                        </div>
+
+                        <div class="city-card">
+                            <div class="city-name">新绛</div>
+                            <div class="city-info">
+                                <div>省份: 山西省</div>
+                                <div>所属城市: 运城市</div>
+                                <div>区县: 新绛县</div>
+                                <div>坐标: 经度: 111.2248, 纬度: 35.6160</div>
+                            </div>
+                            <div class="city-dynasty">历史背景: 唐、宋、明、清（晋南古城）</div>
+                        </div>
+
+                        <div class="city-card">
+                            <div class="city-name">代县</div>
+                            <div class="city-info">
+                                <div>省份: 山西省</div>
+                                <div>所属城市: 忻州市</div>
+                                <div>区县: 代县</div>
+                                <div>坐标: 经度: 112.9601, 纬度: 39.0668</div>
+                            </div>
+                            <div class="city-dynasty">历史背景: 汉、唐（军事要塞），明、清（雁门关所在地）</div>
+                        </div>
+
+                        <div class="city-card">
+                            <div class="city-name">祁县</div>
+                            <div class="city-info">
+                                <div>省份: 山西省</div>
+                                <div>所属城市: 晋中市</div>
+                                <div>区县: 祁县</div>
+                                <div>坐标: 经度: 112.3352, 纬度: 37.3584</div>
+                            </div>
+                            <div class="city-dynasty">历史背景: 明、清（晋商故里）</div>
+                        </div>
+
+                        <div class="city-card">
+                            <div class="city-name">平遥</div>
+                            <div class="city-info">
+                                <div>省份: 山西省</div>
+                                <div>所属城市: 晋中市</div>
+                                <div>区县: 平遥县</div>
+                                <div>坐标: 经度: 112.1758, 纬度: 37.1896</div>
+                            </div>
+                            <div class="city-dynasty">历史背景: 明、清（晋商故里，古城保存完整）</div>
+                        </div>
+
+                        <div class="city-card">
+                            <div class="city-name">桂林</div>
+                            <div class="city-info">
+                                <div>省份: 广西壮族自治区</div>
+                                <div>所属城市: 桂林市</div>
+                                <div>区县: 无</div>
+                                <div>坐标: 经度: 110.1798, 纬度: 25.2356</div>
+                            </div>
+                            <div class="city-dynasty">历史背景: 汉、唐、宋、明、清（岭南文化名城）</div>
+                        </div>
+
+                        <div class="city-card">
+                            <div class="city-name">扬州</div>
+                            <div class="city-info">
+                                <div>省份: 江苏省</div>
+                                <div>所属城市: 扬州市</div>
+                                <div>区县: 无</div>
+                                <div>坐标: 经度: 119.4128, 纬度: 32.3944</div>
+                            </div>
+                            <div class="city-dynasty">历史背景: 汉、唐、宋、明、清（运河枢纽与商业重镇）</div>
+                        </div>
+
+                        <div class="city-card">
+                            <div class="city-name">苏州</div>
+                            <div class="city-info">
+                                <div>省份: 江苏省</div>
+                                <div>所属城市: 苏州市</div>
+                                <div>区县: 无</div>
+                                <div>坐标: 经度: 120.5853, 纬度: 31.2998</div>
+                            </div>
+                            <div class="city-dynasty">历史背景: 春秋（吴国都城），宋、明、清（江南繁华都市）</div>
+                        </div>
+
+                        <div class="city-card">
+                            <div class="city-name">南京</div>
+                            <div class="city-info">
+                                <div>省份: 江苏省</div>
+                                <div>所属城市: 南京市</div>
+                                <div>区县: 无</div>
+                                <div>坐标: 经度: 118.7966, 纬度: 32.0593</div>
+                            </div>
+                            <div class="city-dynasty">历史背景: 东吴、东晋、南朝（宋齐梁陈）都城，明（初期都城）</div>
+                        </div>
+
+                        <div class="city-card">
+                            <div class="city-name">镇江</div>
+                            <div class="city-info">
+                                <div>省份: 江苏省</div>
+                                <div>所属城市: 镇江市</div>
+                                <div>区县: 无</div>
+                                <div>坐标: 经度: 119.4244, 纬度: 32.1881</div>
+                            </div>
+                            <div class="city-dynasty">历史背景: 春秋（吴国属地），宋、明、清（江南古城）</div>
+                        </div>
+
+                        <div class="city-card">
+                            <div class="city-name">常熟</div>
+                            <div class="city-info">
+                                <div>省份: 江苏省</div>
+                                <div>所属城市: 苏州市</div>
+                                <div>区县: 常熟市</div>
+                                <div>坐标: 经度: 120.7525, 纬度: 31.6560</div>
+                            </div>
+                            <div class="city-dynasty">历史背景: 宋、明、清（江南文化名城）</div>
+                        </div>
+
+                        <div class="city-card">
+                            <div class="city-name">淮安</div>
+                            <div class="city-info">
+                                <div>省份: 江苏省</div>
+                                <div>所属城市: 淮安市</div>
+                                <div>区县: 无</div>
+                                <div>坐标: 经度: 119.1132, 纬度: 33.5515</div>
+                            </div>
+                            <div class="city-dynasty">历史背景: 宋、明、清（运河古城）</div>
+                        </div>
+
+                        <div class="city-card">
+                            <div class="city-name">赣州</div>
+                            <div class="city-info">
+                                <div>省份: 江西省</div>
+                                <div>所属城市: 赣州市</div>
+                                <div>区县: 无</div>
+                                <div>坐标: 经度: 114.9335, 纬度: 25.8311</div>
+                            </div>
+                            <div class="city-dynasty">历史背景: 唐、宋、明、清（赣南重镇）</div>
+                        </div>
+
+                        <div class="city-card">
+                            <div class="city-name">保定</div>
+                            <div class="city-info">
+                                <div>省份: 河北省</div>
+                                <div>所属城市: 保定市</div>
+                                <div>区县: 无</div>
+                                <div>坐标: 经度: 115.4645, 纬度: 38.8745</div>
+                            </div>
+                            <div class="city-dynasty">历史背景: 宋、明、清（直隶重镇），近代（直隶省会）</div>
+                        </div>
+
+                        <div class="city-card">
+                            <div class="city-name">濮阳</div>
+                            <div class="city-info">
+                                <div>省份: 河南省</div>
+                                <div>所属城市: 濮阳市</div>
+                                <div>区县: 无</div>
+                                <div>坐标: 经度: 115.0292, 纬度: 35.7627</div>
+                            </div>
+                            <div class="city-dynasty">历史背景: 夏、商（都城），汉、唐、宋、明、清（豫北古城）</div>
+                        </div>
+
+                        <div class="city-card">
+                            <div class="city-name">浚县</div>
+                            <div class="city-info">
+                                <div>省份: 河南省</div>
+                                <div>所属城市: 鹤壁市</div>
+                                <div>区县: 浚县</div>
+                                <div>坐标: 经度: 114.5506, 纬度: 35.6772</div>
+                            </div>
+                            <div class="city-dynasty">历史背景: 汉、唐、宋、明、清（豫北古城）</div>
+                        </div>
+
+                        <div class="city-card">
+                            <div class="city-name">衢州</div>
+                            <div class="city-info">
+                                <div>省份: 浙江省</div>
+                                <div>所属城市: 衢州市</div>
+                                <div>区县: 无</div>
+                                <div>坐标: 经度: 118.8593, 纬度: 28.9702</div>
+                            </div>
+                            <div class="city-dynasty">历史背景: 唐、宋、明、清（浙西重镇）</div>
+                        </div>
+
+                        <div class="city-card">
+                            <div class="city-name">临海</div>
+                            <div class="city-info">
+                                <div>省份: 浙江省</div>
+                                <div>所属城市: 台州市</div>
+                                <div>区县: 临海市</div>
+                                <div>坐标: 经度: 121.1446, 纬度: 28.8590</div>
+                            </div>
+                            <div class="city-dynasty">历史背景: 唐、宋、明、清（浙东古城）</div>
+                        </div>
+
+                        <div class="city-card">
+                            <div class="city-name">宁波</div>
+                            <div class="city-info">
+                                <div>省份: 浙江省</div>
+                                <div>所属城市: 宁波市</div>
+                                <div>区县: 无</div>
+                                <div>坐标: 经度: 121.6245, 纬度: 29.8603</div>
+                            </div>
+                            <div class="city-dynasty">历史背景: 宋、明、清（港口名城）</div>
+                        </div>
+
+                        <div class="city-card">
+                            <div class="city-name">琼山</div>
+                            <div class="city-info">
+                                <div>省份: 海南省</div>
+                                <div>所属城市: 海口市</div>
+                                <div>区县: 琼山区</div>
+                                <div>坐标: 经度: 110.3843, 纬度: 19.9843</div>
+                            </div>
+                            <div class="city-dynasty">历史背景: 唐、宋、明、清（海南古城，现属海口）</div>
+                        </div>
+
+                        <div class="city-card">
+                            <div class="city-name">长沙</div>
+                            <div class="city-info">
+                                <div>省份: 湖南省</div>
+                                <div>所属城市: 长沙市</div>
+                                <div>区县: 无</div>
+                                <div>坐标: 经度: 112.9389, 纬度: 28.2283</div>
+                            </div>
+                            <div class="city-dynasty">历史背景: 楚（重要城市），汉、唐、宋、明、清（区域中心）</div>
+                        </div>
+
+                        <div class="city-card">
+                            <div class="city-name">敦煌</div>
+                            <div class="city-info">
+                                <div>省份: 甘肃省</div>
+                                <div>所属城市: 酒泉市</div>
+                                <div>区县: 敦煌市</div>
+                                <div>坐标: 经度: 94.6620, 纬度: 40.1421</div>
+                            </div>
+                            <div class="city-dynasty">历史背景: 汉、唐（丝路明珠）</div>
+                        </div>
+
+                        <div class="city-card">
+                            <div class="city-name">长汀</div>
+                            <div class="city-info">
+                                <div>省份: 福建省</div>
+                                <div>所属城市: 龙岩市</div>
+                                <div>区县: 长汀县</div>
+                                <div>坐标: 经度: 116.3576, 纬度: 25.8335</div>
+                            </div>
+                            <div class="city-dynasty">历史背景: 唐、宋、明、清（闽西重镇，客家文化中心）</div>
+                        </div>
+
+                        <div class="city-card">
+                            <div class="city-name">福州</div>
+                            <div class="city-info">
+                                <div>省份: 福建省</div>
+                                <div>所属城市: 福州市</div>
+                                <div>区县: 无</div>
+                                <div>坐标: 经度: 119.2964, 纬度: 26.0743</div>
+                            </div>
+                            <div class="city-dynasty">历史背景: 宋、明、清（福建首府）</div>
+                        </div>
+
+                        <div class="city-card">
+                            <div class="city-name">漳州</div>
+                            <div class="city-info">
+                                <div>省份: 福建省</div>
+                                <div>所属城市: 漳州市</div>
+                                <div>区县: 无</div>
+                                <div>坐标: 经度: 117.6473, 纬度: 24.5153</div>
+                            </div>
+                            <div class="city-dynasty">历史背景: 宋、明、清（闽南古城）</div>
+                        </div>
+
+                        <div class="city-card">
+                            <div class="city-name">江孜</div>
+                            <div class="city-info">
+                                <div>省份: 西藏自治区</div>
+                                <div>所属城市: 日喀则市</div>
+                                <div>区县: 江孜县</div>
+                                <div>坐标: 经度: 89.6057, 纬度: 28.9119</div>
+                            </div>
+                            <div class="city-dynasty">历史背景: 明、清（后藏军事重镇）</div>
+                        </div>
+
+                        <div class="city-card">
+                            <div class="city-name">日喀则</div>
+                            <div class="city-info">
+                                <div>省份: 西藏自治区</div>
+                                <div>所属城市: 日喀则市</div>
+                                <div>区县: 无</div>
+                                <div>坐标: 经度: 88.8804, 纬度: 29.2668</div>
+                            </div>
+                            <div class="city-dynasty">历史背景: 元、明（后藏重镇）</div>
+                        </div>
+
+                        <div class="city-card">
+                            <div class="city-name">遵义</div>
+                            <div class="city-info">
+                                <div>省份: 贵州省</div>
+                                <div>所属城市: 遵义市</div>
+                                <div>区县: 无</div>
+                                <div>坐标: 经度: 107.0319, 纬度: 27.7219</div>
+                            </div>
+                            <div class="city-dynasty">历史背景: 明、清（西南重镇）</div>
+                        </div>
+
+                        <div class="city-card">
+                            <div class="city-name">沈阳</div>
+                            <div class="city-info">
+                                <div>省份: 辽宁省</div>
+                                <div>所属城市: 沈阳市</div>
+                                <div>区县: 无</div>
+                                <div>坐标: 经度: 123.4647, 纬度: 41.6776</div>
+                            </div>
+                            <div class="city-dynasty">历史背景: 清（发祥地，初期都城），明、清（东北重镇）</div>
+                        </div>
+
+                        <div class="city-card">
+                            <div class="city-name">延安</div>
+                            <div class="city-info">
+                                <div>省份: 陕西省</div>
+                                <div>所属城市: 延安市</div>
+                                <div>区县: 无</div>
+                                <div>坐标: 经度: 109.4947, 纬度: 36.6501</div>
+                            </div>
+                            <div class="city-dynasty">历史背景: 战国（魏国领地），明、清（陕北重镇），近现代革命圣地</div>
+                        </div>
+
+                        <div class="city-card">
+                            <div class="city-name">汉中</div>
+                            <div class="city-info">
+                                <div>省份: 陕西省</div>
+                                <div>所属城市: 汉中市</div>
+                                <div>区县: 无</div>
+                                <div>坐标: 经度: 107.0232, 纬度: 33.0664</div>
+                            </div>
+                            <div class="city-dynasty">历史背景: 汉（刘邦发迹地），三国（军事重镇），唐、宋、明、清（区域中心）</div>
+                        </div>
+
+                        <div class="city-card">
+                            <div class="city-name">同仁</div>
+                            <div class="city-info">
+                                <div>省份: 青海省</div>
+                                <div>所属城市: 黄南藏族自治州</div>
+                                <div>区县: 同仁市</div>
+                                <div>坐标: 经度: 102.0187, 纬度: 35.5158</div>
+                            </div>
+                            <div class="city-dynasty">历史背景: 明、清（藏传佛教文化名城）</div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+            <div class="timeline-item" data-dynasty="清朝">
+                <div class="timeline-header">
+                    <div class="dynasty-name">清朝</div>
+                    <div class="dynasty-period">公元1636年 - 公元1912年</div>
+                    <div class="dynasty-count">50 座古城</div>
+                </div>
+                <div class="city-list" id="cityList_清朝">
+                    <div class="city-grid">
+
+                        <div class="city-card">
+                            <div class="city-name">上海</div>
+                            <div class="city-info">
+                                <div>省份: 上海市</div>
+                                <div>所属城市: 上海市</div>
+                                <div>区县: 无</div>
+                                <div>坐标: 经度: 121.4737, 纬度: 31.2305</div>
+                            </div>
+                            <div class="city-dynasty">历史背景: 宋、明、清（沿海城镇），近代（国际大都市）</div>
+                        </div>
+
+                        <div class="city-card">
+                            <div class="city-name">昆明</div>
+                            <div class="city-info">
+                                <div>省份: 云南省</div>
+                                <div>所属城市: 昆明市</div>
+                                <div>区县: 无</div>
+                                <div>坐标: 经度: 102.8337, 纬度: 24.8815</div>
+                            </div>
+                            <div class="city-dynasty">历史背景: 南诏、大理（重要城市），明、清（云南首府）</div>
+                        </div>
+
+                        <div class="city-card">
+                            <div class="city-name">建水</div>
+                            <div class="city-info">
+                                <div>省份: 云南省</div>
+                                <div>所属城市: 红河哈尼族彝族自治州</div>
+                                <div>区县: 建水县</div>
+                                <div>坐标: 经度: 102.8262, 纬度: 23.6358</div>
+                            </div>
+                            <div class="city-dynasty">历史背景: 唐、宋、明、清（滇南重镇）</div>
+                        </div>
+
+                        <div class="city-card">
+                            <div class="city-name">巍山</div>
+                            <div class="city-info">
+                                <div>省份: 云南省</div>
+                                <div>所属城市: 大理白族自治州</div>
+                                <div>区县: 巍山彝族回族自治县</div>
+                                <div>坐标: 经度: 100.3070, 纬度: 25.2271</div>
+                            </div>
+                            <div class="city-dynasty">历史背景: 南诏（发祥地），明、清（古城）</div>
+                        </div>
+
+                        <div class="city-card">
+                            <div class="city-name">呼和浩特</div>
+                            <div class="city-info">
+                                <div>省份: 内蒙古自治区</div>
+                                <div>所属城市: 呼和浩特市</div>
+                                <div>区县: 无</div>
+                                <div>坐标: 经度: 111.7488, 纬度: 40.8421</div>
+                            </div>
+                            <div class="city-dynasty">历史背景: 明、清（蒙古族聚居地）</div>
+                        </div>
+
+                        <div class="city-card">
+                            <div class="city-name">北京</div>
+                            <div class="city-info">
+                                <div>省份: 北京市</div>
+                                <div>所属城市: 北京市</div>
+                                <div>区县: 无</div>
+                                <div>坐标: 经度: 116.4074, 纬度: 39.9042</div>
+                            </div>
+                            <div class="city-dynasty">历史背景: 元、明、清（都城），历史悠久</div>
+                        </div>
+
+                        <div class="city-card">
+                            <div class="city-name">吉林</div>
+                            <div class="city-info">
+                                <div>省份: 吉林省</div>
+                                <div>所属城市: 吉林市</div>
+                                <div>区县: 无</div>
+                                <div>坐标: 经度: 126.5497, 纬度: 43.8381</div>
+                            </div>
+                            <div class="city-dynasty">历史背景: 明、清（满族聚居地），近代（东北重镇）</div>
+                        </div>
+
+                        <div class="city-card">
+                            <div class="city-name">成都</div>
+                            <div class="city-info">
+                                <div>省份: 四川省</div>
+                                <div>所属城市: 成都市</div>
+                                <div>区县: 无</div>
+                                <div>坐标: 经度: 104.0663, 纬度: 30.5730</div>
+                            </div>
+                            <div class="city-dynasty">历史背景: 蜀（都城），汉、唐、宋、明、清（西南中心）</div>
+                        </div>
+
+                        <div class="city-card">
+                            <div class="city-name">乐山</div>
+                            <div class="city-info">
+                                <div>省份: 四川省</div>
+                                <div>所属城市: 乐山市</div>
+                                <div>区县: 无</div>
+                                <div>坐标: 经度: 103.7661, 纬度: 29.5523</div>
+                            </div>
+                            <div class="city-dynasty">历史背景: 汉、唐、宋、明、清（佛教文化名城，乐山大佛所在地）</div>
+                        </div>
+
+                        <div class="city-card">
+                            <div class="city-name">都江堰</div>
+                            <div class="city-info">
+                                <div>省份: 四川省</div>
+                                <div>所属城市: 成都市</div>
+                                <div>区县: 都江堰市</div>
+                                <div>坐标: 经度: 103.6472, 纬度: 30.9888</div>
+                            </div>
+                            <div class="city-dynasty">历史背景: 秦（李冰修建都江堰），汉、唐、宋、明、清（水利文化名城）</div>
+                        </div>
+
+                        <div class="city-card">
+                            <div class="city-name">泸州</div>
+                            <div class="city-info">
+                                <div>省份: 四川省</div>
+                                <div>所属城市: 泸州市</div>
+                                <div>区县: 无</div>
+                                <div>坐标: 经度: 105.4419, 纬度: 28.8710</div>
+                            </div>
+                            <div class="city-dynasty">历史背景: 汉、唐、宋、明、清（川南重镇，酒文化名城）</div>
+                        </div>
+
+                        <div class="city-card">
+                            <div class="city-name">自贡</div>
+                            <div class="city-info">
+                                <div>省份: 四川省</div>
+                                <div>所属城市: 自贡市</div>
+                                <div>区县: 无</div>
+                                <div>坐标: 经度: 104.7793, 纬度: 29.3392</div>
+                            </div>
+                            <div class="city-dynasty">历史背景: 明、清（盐都）</div>
+                        </div>
+
+                        <div class="city-card">
+                            <div class="city-name">天津</div>
+                            <div class="city-info">
+                                <div>省份: 天津市</div>
+                                <div>所属城市: 天津市</div>
+                                <div>区县: 无</div>
+                                <div>坐标: 经度: 117.2015, 纬度: 39.0853</div>
+                            </div>
+                            <div class="city-dynasty">历史背景: 明、清（漕运重镇），近代（通商口岸）</div>
+                        </div>
+
+                        <div class="city-card">
+                            <div class="city-name">歙县</div>
+                            <div class="city-info">
+                                <div>省份: 安徽省</div>
+                                <div>所属城市: 黄山市</div>
+                                <div>区县: 歙县</div>
+                                <div>坐标: 经度: 118.4153, 纬度: 29.8614</div>
+                            </div>
+                            <div class="city-dynasty">历史背景: 宋、明、清（徽州文化中心）</div>
+                        </div>
+
+                        <div class="city-card">
+                            <div class="city-name">聊城</div>
+                            <div class="city-info">
+                                <div>省份: 山东省</div>
+                                <div>所属城市: 聊城市</div>
+                                <div>区县: 无</div>
+                                <div>坐标: 经度: 115.9852, 纬度: 36.4559</div>
+                            </div>
+                            <div class="city-dynasty">历史背景: 宋、明、清（运河古城）</div>
+                        </div>
+
+                        <div class="city-card">
+                            <div class="city-name">邹城</div>
+                            <div class="city-info">
+                                <div>省份: 山东省</div>
+                                <div>所属城市: 济宁市</div>
+                                <div>区县: 邹城市</div>
+                                <div>坐标: 经度: 117.0074, 纬度: 35.4025</div>
+                            </div>
+                            <div class="city-dynasty">历史背景: 春秋（邾国都城），明、清（儒家文化名城）</div>
+                        </div>
+
+                        <div class="city-card">
+                            <div class="city-name">淄博</div>
+                            <div class="city-info">
+                                <div>省份: 山东省</div>
+                                <div>所属城市: 淄博市</div>
+                                <div>区县: 无</div>
+                                <div>坐标: 经度: 118.0550, 纬度: 36.8138</div>
+                            </div>
+                            <div class="city-dynasty">历史背景: 春秋（齐国属地），汉、唐、宋、明、清（历史城市）</div>
+                        </div>
+
+                        <div class="city-card">
+                            <div class="city-name">新绛</div>
+                            <div class="city-info">
+                                <div>省份: 山西省</div>
+                                <div>所属城市: 运城市</div>
+                                <div>区县: 新绛县</div>
+                                <div>坐标: 经度: 111.2248, 纬度: 35.6160</div>
+                            </div>
+                            <div class="city-dynasty">历史背景: 唐、宋、明、清（晋南古城）</div>
+                        </div>
+
+                        <div class="city-card">
+                            <div class="city-name">代县</div>
+                            <div class="city-info">
+                                <div>省份: 山西省</div>
+                                <div>所属城市: 忻州市</div>
+                                <div>区县: 代县</div>
+                                <div>坐标: 经度: 112.9601, 纬度: 39.0668</div>
+                            </div>
+                            <div class="city-dynasty">历史背景: 汉、唐（军事要塞），明、清（雁门关所在地）</div>
+                        </div>
+
+                        <div class="city-card">
+                            <div class="city-name">祁县</div>
+                            <div class="city-info">
+                                <div>省份: 山西省</div>
+                                <div>所属城市: 晋中市</div>
+                                <div>区县: 祁县</div>
+                                <div>坐标: 经度: 112.3352, 纬度: 37.3584</div>
+                            </div>
+                            <div class="city-dynasty">历史背景: 明、清（晋商故里）</div>
+                        </div>
+
+                        <div class="city-card">
+                            <div class="city-name">平遥</div>
+                            <div class="city-info">
+                                <div>省份: 山西省</div>
+                                <div>所属城市: 晋中市</div>
+                                <div>区县: 平遥县</div>
+                                <div>坐标: 经度: 112.1758, 纬度: 37.1896</div>
+                            </div>
+                            <div class="city-dynasty">历史背景: 明、清（晋商故里，古城保存完整）</div>
+                        </div>
+
+                        <div class="city-card">
+                            <div class="city-name">广州</div>
+                            <div class="city-info">
+                                <div>省份: 广东省</div>
+                                <div>所属城市: 广州市</div>
+                                <div>区县: 无</div>
+                                <div>坐标: 经度: 113.2645, 纬度: 23.1301</div>
+                            </div>
+                            <div class="city-dynasty">历史背景: 汉至清（岭南重镇，海上丝绸之路起点）</div>
+                        </div>
+
+                        <div class="city-card">
+                            <div class="city-name">桂林</div>
+                            <div class="city-info">
+                                <div>省份: 广西壮族自治区</div>
+                                <div>所属城市: 桂林市</div>
+                                <div>区县: 无</div>
+                                <div>坐标: 经度: 110.1798, 纬度: 25.2356</div>
+                            </div>
+                            <div class="city-dynasty">历史背景: 汉、唐、宋、明、清（岭南文化名城）</div>
+                        </div>
+
+                        <div class="city-card">
+                            <div class="city-name">扬州</div>
+                            <div class="city-info">
+                                <div>省份: 江苏省</div>
+                                <div>所属城市: 扬州市</div>
+                                <div>区县: 无</div>
+                                <div>坐标: 经度: 119.4128, 纬度: 32.3944</div>
+                            </div>
+                            <div class="city-dynasty">历史背景: 汉、唐、宋、明、清（运河枢纽与商业重镇）</div>
+                        </div>
+
+                        <div class="city-card">
+                            <div class="city-name">苏州</div>
+                            <div class="city-info">
+                                <div>省份: 江苏省</div>
+                                <div>所属城市: 苏州市</div>
+                                <div>区县: 无</div>
+                                <div>坐标: 经度: 120.5853, 纬度: 31.2998</div>
+                            </div>
+                            <div class="city-dynasty">历史背景: 春秋（吴国都城），宋、明、清（江南繁华都市）</div>
+                        </div>
+
+                        <div class="city-card">
+                            <div class="city-name">镇江</div>
+                            <div class="city-info">
+                                <div>省份: 江苏省</div>
+                                <div>所属城市: 镇江市</div>
+                                <div>区县: 无</div>
+                                <div>坐标: 经度: 119.4244, 纬度: 32.1881</div>
+                            </div>
+                            <div class="city-dynasty">历史背景: 春秋（吴国属地），宋、明、清（江南古城）</div>
+                        </div>
+
+                        <div class="city-card">
+                            <div class="city-name">常熟</div>
+                            <div class="city-info">
+                                <div>省份: 江苏省</div>
+                                <div>所属城市: 苏州市</div>
+                                <div>区县: 常熟市</div>
+                                <div>坐标: 经度: 120.7525, 纬度: 31.6560</div>
+                            </div>
+                            <div class="city-dynasty">历史背景: 宋、明、清（江南文化名城）</div>
+                        </div>
+
+                        <div class="city-card">
+                            <div class="city-name">淮安</div>
+                            <div class="city-info">
+                                <div>省份: 江苏省</div>
+                                <div>所属城市: 淮安市</div>
+                                <div>区县: 无</div>
+                                <div>坐标: 经度: 119.1132, 纬度: 33.5515</div>
+                            </div>
+                            <div class="city-dynasty">历史背景: 宋、明、清（运河古城）</div>
+                        </div>
+
+                        <div class="city-card">
+                            <div class="city-name">景德镇</div>
+                            <div class="city-info">
+                                <div>省份: 江西省</div>
+                                <div>所属城市: 景德镇市</div>
+                                <div>区县: 无</div>
+                                <div>坐标: 经度: 117.1849, 纬度: 29.2744</div>
+                            </div>
+                            <div class="city-dynasty">历史背景: 宋至清（瓷都，官窑所在地）</div>
+                        </div>
+
+                        <div class="city-card">
+                            <div class="city-name">赣州</div>
+                            <div class="city-info">
+                                <div>省份: 江西省</div>
+                                <div>所属城市: 赣州市</div>
+                                <div>区县: 无</div>
+                                <div>坐标: 经度: 114.9335, 纬度: 25.8311</div>
+                            </div>
+                            <div class="city-dynasty">历史背景: 唐、宋、明、清（赣南重镇）</div>
+                        </div>
+
+                        <div class="city-card">
+                            <div class="city-name">承德</div>
+                            <div class="city-info">
+                                <div>省份: 河北省</div>
+                                <div>所属城市: 承德市</div>
+                                <div>区县: 无</div>
+                                <div>坐标: 经度: 117.9627, 纬度: 40.9529</div>
+                            </div>
+                            <div class="city-dynasty">历史背景: 清（皇家园林与避暑胜地）</div>
+                        </div>
+
+                        <div class="city-card">
+                            <div class="city-name">保定</div>
+                            <div class="city-info">
+                                <div>省份: 河北省</div>
+                                <div>所属城市: 保定市</div>
+                                <div>区县: 无</div>
+                                <div>坐标: 经度: 115.4645, 纬度: 38.8745</div>
+                            </div>
+                            <div class="city-dynasty">历史背景: 宋、明、清（直隶重镇），近代（直隶省会）</div>
+                        </div>
+
+                        <div class="city-card">
+                            <div class="city-name">濮阳</div>
+                            <div class="city-info">
+                                <div>省份: 河南省</div>
+                                <div>所属城市: 濮阳市</div>
+                                <div>区县: 无</div>
+                                <div>坐标: 经度: 115.0292, 纬度: 35.7627</div>
+                            </div>
+                            <div class="city-dynasty">历史背景: 夏、商（都城），汉、唐、宋、明、清（豫北古城）</div>
+                        </div>
+
+                        <div class="city-card">
+                            <div class="city-name">浚县</div>
+                            <div class="city-info">
+                                <div>省份: 河南省</div>
+                                <div>所属城市: 鹤壁市</div>
+                                <div>区县: 浚县</div>
+                                <div>坐标: 经度: 114.5506, 纬度: 35.6772</div>
+                            </div>
+                            <div class="city-dynasty">历史背景: 汉、唐、宋、明、清（豫北古城）</div>
+                        </div>
+
+                        <div class="city-card">
+                            <div class="city-name">衢州</div>
+                            <div class="city-info">
+                                <div>省份: 浙江省</div>
+                                <div>所属城市: 衢州市</div>
+                                <div>区县: 无</div>
+                                <div>坐标: 经度: 118.8593, 纬度: 28.9702</div>
+                            </div>
+                            <div class="city-dynasty">历史背景: 唐、宋、明、清（浙西重镇）</div>
+                        </div>
+
+                        <div class="city-card">
+                            <div class="city-name">临海</div>
+                            <div class="city-info">
+                                <div>省份: 浙江省</div>
+                                <div>所属城市: 台州市</div>
+                                <div>区县: 临海市</div>
+                                <div>坐标: 经度: 121.1446, 纬度: 28.8590</div>
+                            </div>
+                            <div class="city-dynasty">历史背景: 唐、宋、明、清（浙东古城）</div>
+                        </div>
+
+                        <div class="city-card">
+                            <div class="city-name">宁波</div>
+                            <div class="city-info">
+                                <div>省份: 浙江省</div>
+                                <div>所属城市: 宁波市</div>
+                                <div>区县: 无</div>
+                                <div>坐标: 经度: 121.6245, 纬度: 29.8603</div>
+                            </div>
+                            <div class="city-dynasty">历史背景: 宋、明、清（港口名城）</div>
+                        </div>
+
+                        <div class="city-card">
+                            <div class="city-name">琼山</div>
+                            <div class="city-info">
+                                <div>省份: 海南省</div>
+                                <div>所属城市: 海口市</div>
+                                <div>区县: 琼山区</div>
+                                <div>坐标: 经度: 110.3843, 纬度: 19.9843</div>
+                            </div>
+                            <div class="city-dynasty">历史背景: 唐、宋、明、清（海南古城，现属海口）</div>
+                        </div>
+
+                        <div class="city-card">
+                            <div class="city-name">长沙</div>
+                            <div class="city-info">
+                                <div>省份: 湖南省</div>
+                                <div>所属城市: 长沙市</div>
+                                <div>区县: 无</div>
+                                <div>坐标: 经度: 112.9389, 纬度: 28.2283</div>
+                            </div>
+                            <div class="city-dynasty">历史背景: 楚（重要城市），汉、唐、宋、明、清（区域中心）</div>
+                        </div>
+
+                        <div class="city-card">
+                            <div class="city-name">长汀</div>
+                            <div class="city-info">
+                                <div>省份: 福建省</div>
+                                <div>所属城市: 龙岩市</div>
+                                <div>区县: 长汀县</div>
+                                <div>坐标: 经度: 116.3576, 纬度: 25.8335</div>
+                            </div>
+                            <div class="city-dynasty">历史背景: 唐、宋、明、清（闽西重镇，客家文化中心）</div>
+                        </div>
+
+                        <div class="city-card">
+                            <div class="city-name">福州</div>
+                            <div class="city-info">
+                                <div>省份: 福建省</div>
+                                <div>所属城市: 福州市</div>
+                                <div>区县: 无</div>
+                                <div>坐标: 经度: 119.2964, 纬度: 26.0743</div>
+                            </div>
+                            <div class="city-dynasty">历史背景: 宋、明、清（福建首府）</div>
+                        </div>
+
+                        <div class="city-card">
+                            <div class="city-name">漳州</div>
+                            <div class="city-info">
+                                <div>省份: 福建省</div>
+                                <div>所属城市: 漳州市</div>
+                                <div>区县: 无</div>
+                                <div>坐标: 经度: 117.6473, 纬度: 24.5153</div>
+                            </div>
+                            <div class="city-dynasty">历史背景: 宋、明、清（闽南古城）</div>
+                        </div>
+
+                        <div class="city-card">
+                            <div class="city-name">拉萨</div>
+                            <div class="city-info">
+                                <div>省份: 西藏自治区</div>
+                                <div>所属城市: 拉萨市</div>
+                                <div>区县: 无</div>
+                                <div>坐标: 经度: 91.1719, 纬度: 29.6535</div>
+                            </div>
+                            <div class="city-dynasty">历史背景: 吐蕃（都城），元至清（藏区政治文化中心）</div>
+                        </div>
+
+                        <div class="city-card">
+                            <div class="city-name">江孜</div>
+                            <div class="city-info">
+                                <div>省份: 西藏自治区</div>
+                                <div>所属城市: 日喀则市</div>
+                                <div>区县: 江孜县</div>
+                                <div>坐标: 经度: 89.6057, 纬度: 28.9119</div>
+                            </div>
+                            <div class="city-dynasty">历史背景: 明、清（后藏军事重镇）</div>
+                        </div>
+
+                        <div class="city-card">
+                            <div class="city-name">遵义</div>
+                            <div class="city-info">
+                                <div>省份: 贵州省</div>
+                                <div>所属城市: 遵义市</div>
+                                <div>区县: 无</div>
+                                <div>坐标: 经度: 107.0319, 纬度: 27.7219</div>
+                            </div>
+                            <div class="city-dynasty">历史背景: 明、清（西南重镇）</div>
+                        </div>
+
+                        <div class="city-card">
+                            <div class="city-name">沈阳</div>
+                            <div class="city-info">
+                                <div>省份: 辽宁省</div>
+                                <div>所属城市: 沈阳市</div>
+                                <div>区县: 无</div>
+                                <div>坐标: 经度: 123.4647, 纬度: 41.6776</div>
+                            </div>
+                            <div class="city-dynasty">历史背景: 清（发祥地，初期都城），明、清（东北重镇）</div>
+                        </div>
+
+                        <div class="city-card">
+                            <div class="city-name">延安</div>
+                            <div class="city-info">
+                                <div>省份: 陕西省</div>
+                                <div>所属城市: 延安市</div>
+                                <div>区县: 无</div>
+                                <div>坐标: 经度: 109.4947, 纬度: 36.6501</div>
+                            </div>
+                            <div class="city-dynasty">历史背景: 战国（魏国领地），明、清（陕北重镇），近现代革命圣地</div>
+                        </div>
+
+                        <div class="city-card">
+                            <div class="city-name">汉中</div>
+                            <div class="city-info">
+                                <div>省份: 陕西省</div>
+                                <div>所属城市: 汉中市</div>
+                                <div>区县: 无</div>
+                                <div>坐标: 经度: 107.0232, 纬度: 33.0664</div>
+                            </div>
+                            <div class="city-dynasty">历史背景: 汉（刘邦发迹地），三国（军事重镇），唐、宋、明、清（区域中心）</div>
+                        </div>
+
+                        <div class="city-card">
+                            <div class="city-name">同仁</div>
+                            <div class="city-info">
+                                <div>省份: 青海省</div>
+                                <div>所属城市: 黄南藏族自治州</div>
+                                <div>区县: 同仁市</div>
+                                <div>坐标: 经度: 102.0187, 纬度: 35.5158</div>
+                            </div>
+                            <div class="city-dynasty">历史背景: 明、清（藏传佛教文化名城）</div>
+                        </div>
+
+                        <div class="city-card">
+                            <div class="city-name">哈尔滨</div>
+                            <div class="city-info">
+                                <div>省份: 黑龙江省</div>
+                                <div>所属城市: 哈尔滨市</div>
+                                <div>区县: 无</div>
+                                <div>坐标: 经度: 126.5350, 纬度: 45.8030</div>
+                            </div>
+                            <div class="city-dynasty">历史背景: 清（铁路枢纽），近代（国际文化名城）</div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        // 页面加载完成后执行
+        document.addEventListener('DOMContentLoaded', function() {
+            // 获取所有时间轴项和显示全部按钮
+            const timelineItems = document.querySelectorAll('.timeline-item');
+            const showAllBtn = document.getElementById('showAllBtn');
+            let allCitiesVisible = true;
+            
+            // 默认显示所有古城
+            showAllCities();
+            
+            // 时间轴项点击事件
+            timelineItems.forEach(item => {
+                item.addEventListener('click', function() {
+                    const dynasty = this.getAttribute('data-dynasty');
+                    const cityList = document.getElementById(`cityList_${dynasty}`);
+                    
+                    // 如果当前是全部显示状态，先隐藏所有
+                    if (allCitiesVisible) {
+                        hideAllCities();
+                        allCitiesVisible = false;
+                    }
+                    
+                    // 切换当前朝代的古城列表显示/隐藏
+                    cityList.classList.toggle('active');
+                    
+                    // 更新按钮文本
+                    updateShowAllBtnText();
+                });
+            });
+            
+            // 显示全部按钮点击事件
+            showAllBtn.addEventListener('click', function() {
+                if (allCitiesVisible) {
+                    hideAllCities();
+                } else {
+                    showAllCities();
+                }
+                allCitiesVisible = !allCitiesVisible;
+                updateShowAllBtnText();
+            });
+            
+            // 显示所有古城
+            function showAllCities() {
+                const cityLists = document.querySelectorAll('.city-list');
+                cityLists.forEach(list => {
+                    list.classList.add('active');
+                });
+            }
+            
+            // 隐藏所有古城
+            function hideAllCities() {
+                const cityLists = document.querySelectorAll('.city-list');
+                cityLists.forEach(list => {
+                    list.classList.remove('active');
+                });
+            }
+            
+            // 更新显示全部按钮文本
+            function updateShowAllBtnText() {
+                if (allCitiesVisible) {
+                    showAllBtn.textContent = '隐藏全部古城';
+                } else {
+                    showAllBtn.textContent = '显示全部古城';
+                }
+            }
+            
+            // 平滑滚动
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    document.querySelector(this.getAttribute('href')).scrollIntoView({
+                        behavior: 'smooth'
+                    });
+                });
+            });
+        });
+    </script>
+</body>
+</html>
