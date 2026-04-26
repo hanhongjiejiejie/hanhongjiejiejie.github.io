@@ -1,0 +1,751 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>历史文化名城 - 核密度分析 | 土楼图谱 & 智能导览</title>
+  
+  <!-- 高德地图 JS API 2.0 + 热力图插件 -->
+  <script type="text/javascript" src="https://webapi.amap.com/maps?v=2.0&key=715e7832cec7a61241370d7e43fc3f85&plugin=AMap.HeatMap"></script>
+  
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body { width: 100%; height: 100%;  font-family: 'Georgia', '宋体', 'KaiTi', '华文楷书', 'Microsoft YaHei', serif; }
+
+    /* ========= 国风顶部横栏：庄严棕色 + 朱砂红 + 暖金，完全平铺 ========= */
+    .top-bar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 70px;
+      background: #4a2c1a;
+      backdrop-filter: blur(4px);
+      background-image: radial-gradient(circle at 20% 40%, rgba(255, 215, 140, 0.08) 2%, transparent 2.5%),
+                        radial-gradient(circle at 85% 70%, rgba(200, 150, 80, 0.06) 1.5%, transparent 2%);
+      background-size: 32px 32px, 28px 28px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 215, 150, 0.25);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 30px;
+      z-index: 9999;
+      border-bottom: 2px solid #c23b22;
+    }
+
+    .top-bar .title {
+      font-size: 22px;
+      font-weight: bold;
+      background: linear-gradient(135deg, #f7e5b5, #e6b422);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      letter-spacing: 2px;
+      text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+    }
+
+    .nav-btn {
+      padding: 8px 22px;
+      margin-left: 12px;
+      border: none;
+      border-radius: 40px;
+      background: rgba(245, 235, 210, 0.2);
+      color: #f7e5c2;
+      cursor: pointer;
+      font-family: inherit;
+      font-size: 15px;
+      transition: 0.25s;
+      backdrop-filter: blur(4px);
+      border: 1px solid #e6b422;
+      letter-spacing: 1px;
+    }
+
+    .nav-btn.active {
+      background: #881c09;
+      color: #fff8eb;
+      border-color: #f3d572;
+      box-shadow: 0 2px 10px rgba(145, 25, 3, 0.5);
+      font-weight: bold;
+    }
+
+    .nav-btn:hover {
+      background: #e6b422;
+      color: #2f2e1f;
+      border-color: #c23b22;
+      transform: translateY(-2px);
+    }
+
+    /* 地图容器 */
+    #viewDiv { 
+      width: 100%; 
+      height: calc(100% - 70px);
+      margin-top: 70px; 
+    }
+
+    /* 右侧全屏侧边栏弹窗 */
+    #popup {
+      position: fixed;
+      top: 70px;
+      right: 0;
+      width: 380px;
+      height: calc(100% - 70px);
+      background: #fdf6ec;
+      border-left: 3px solid #c49368;
+      box-shadow: -2px 0 15px rgba(0,0,0,0.2);
+      padding: 25px;
+      display: none;
+      z-index: 999;
+      overflow-y: auto;
+    }
+    #closePopup {
+      font-size: 22px;
+      color: #6d4c41;
+      cursor: pointer;
+      float: right;
+      margin-top: -10px;
+    }
+    #popupImg {
+      width: 100%;
+      height: 220px;
+      object-fit: cover;
+      border-radius: 8px;
+      margin: 15px 0;
+      border: 2px solid #d7b28a;
+    }
+    #pointName {
+      font-size: 20px;
+      font-weight: bold;
+      color: #6d4c41;
+      margin-bottom: 8px;
+    }
+    #popup p {
+      font-size: 15px;
+      color: #553c37;
+      line-height: 1.7;
+      margin: 6px 0;
+    }
+    #introText {
+      background: #f6eedf;
+      padding: 12px;
+      border-radius: 6px;
+      border-left: 4px solid #c49368;
+      margin: 12px 0;
+    }
+    #baikeLink {
+      display: inline-block;
+      margin-top: 10px;
+      padding: 8px 16px;
+      background: #c49368;
+      color: #fff !important;
+      border-radius: 6px;
+      text-decoration: none;
+      font-size: 14px;
+    }
+
+    /* 土楼专用三按钮样式 (支持换行) */
+    .tulou-buttons-container {
+      margin-top: 18px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      justify-content: space-between;
+    }
+    .tulou-custom-btn {
+      flex: 1;
+      min-width: 90px;
+      text-align: center;
+      padding: 10px 0;
+      background: #9b6a48;
+      color: white;
+      border: none;
+      border-radius: 40px;
+      font-size: 14px;
+      font-weight: bold;
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-block;
+      transition: 0.2s;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+    .tulou-custom-btn:hover {
+      background: #7a4e32;
+      transform: translateY(-1px);
+    }
+
+    /* ========== 左侧悬浮智谱AI搜索框（自定义样式） ========== */
+    #aiPanel {
+      position: fixed;
+      left: 20px;
+      top: 100px;
+      width: 320px;
+      background: #fdf6ec;
+      border: 2px solid #c49368;
+      border-radius: 10px;
+      padding: 18px;
+      box-shadow: 0 3px 15px rgba(0,0,0,0.2);
+      z-index: 888;
+    }
+    #aiPanel h3 {
+      color: #6d4c41;
+      margin-bottom: 12px;
+      font-size: 16px;
+    }
+    /* AI问答区域样式 */
+    #chatContainer {
+      width: 100%;
+      height: 240px;
+      display: flex;
+      flex-direction: column;
+      border: 1px solid #d7b28a;
+      border-radius: 6px;
+      overflow: hidden;
+      margin-bottom: 15px; /* 增加底部间距，分隔AI和时间轴 */
+    }
+    #chatMessages {
+      flex: 1;
+      padding: 10px;
+      overflow-y: auto;
+      background: #fff;
+    }
+    .message {
+      margin-bottom: 10px;
+      padding: 8px;
+      border-radius: 6px;
+      max-width: 90%;
+      line-height: 1.5;
+    }
+    .user-message {
+      background: #e8d8c0;
+      color: #6d4c41;
+      margin-left: auto;
+    }
+    .ai-message {
+      background: #f6eedf;
+      color: #553c37;
+      margin-right: auto;
+    }
+    #chatInputContainer {
+      display: flex;
+      border-top: 1px solid #d7b28a;
+    }
+    #chatInput {
+      flex: 1;
+      padding: 8px 10px;
+      border: none;
+      outline: none;
+      font-family: inherit;
+      font-size: 14px;
+      background: #fdf6ec;
+      color: #6d4c41;
+    }
+    #sendBtn {
+      padding: 8px 15px;
+      border: none;
+      background: #c49368;
+      color: white;
+      cursor: pointer;
+      font-family: inherit;
+      font-size: 14px;
+      transition: 0.2s;
+    }
+    #sendBtn:hover {
+      background: #9b6a48;
+    }
+    #sendBtn:disabled {
+      background: #d7b28a;
+      cursor: not-allowed;
+    }
+    .loading {
+      color: #9b6a48;
+      font-style: italic;
+      text-align: center;
+      padding: 5px;
+    }
+
+    /* ========== 新增：朝代时间轴嵌入窗口样式 ========== */
+    #timeAxisContainer {
+      width: 100%;
+      height: 280px; /* 可根据需要调整高度 */
+      border: 1px solid #d7b28a;
+      border-radius: 6px;
+      overflow: hidden;
+      background: #fff;
+    }
+    #timeAxisIframe {
+      width: 100%;
+      height: 100%;
+      border: none;
+    }
+    #timeAxisTitle {
+      font-size: 15px;
+      color: #6d4c41;
+      margin-bottom: 8px;
+      font-weight: bold;
+      display: block;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- 顶部导航（国风平铺样式） -->
+  <div class="top-bar">
+    <div class="title">🏮 中国传统民居与历史文化名城</div>
+    <div>
+      <button class="nav-btn active" onclick="location.href='古城.html'">古城</button>
+      <button class="nav-btn" onclick="location.href='古镇.html'">古镇</button>
+      <button class="nav-btn" onclick="location.href='古村.html'">古村</button>
+    </div>
+  </div>
+
+  <!-- 左侧悬浮智谱AI面板（API调用版） -->
+  <div id="aiPanel">
+    <h3>🏺 智谱AI · 民居知识智能问答</h3>
+    <!-- 自定义AI问答区域 -->
+    <div id="chatContainer">
+      <div id="chatMessages">
+        <div class="ai-message">你好！我是传统民居知识助手，有什么想了解的可以问我～</div>
+      </div>
+      <div id="chatInputContainer">
+        <input type="text" id="chatInput" placeholder="输入你的问题，比如：福建土楼的特点？">
+        <button id="sendBtn">发送</button>
+      </div>
+    </div>
+
+    <!-- 新增：朝代时间轴嵌入窗口 -->
+    <span id="timeAxisTitle">📜 中国历史文化名城朝代时间轴</span>
+    <div id="timeAxisContainer">
+      <iframe id="timeAxisIframe" src="time-axis.html"></iframe>
+    </div>
+  </div>
+
+  <!-- 右侧全屏侧边栏（土楼专属三按钮） -->
+  <div id="popup">
+    <span id="closePopup">×</span>
+    <div id="pointName"></div>
+    <img id="popupImg" alt="图片">
+    <p id="pointType"></p>
+    <p id="pointProvince"></p>
+    <p id="pointCity"></p>
+    <p id="pointCoord"></p>
+    <p id="introText"></p>
+    <a id="baikeLink" target="_blank">📖 查看百科介绍</a>
+    
+    <!-- 土楼专属三按钮容器：图谱 + 保护与利用 + 智能导览（仅承启楼显示） -->
+    <div id="tulouSpecialBtns" style="display: none;">
+      <div class="tulou-buttons-container">
+        <a href="土楼图谱.html" class="tulou-custom-btn" target="_blank">🏺 土楼图谱</a>
+        <a href="保护与利用.html" class="tulou-custom-btn" target="_blank">🛡️ 保护与利用</a>
+        <a href="承启楼.html" class="tulou-custom-btn" target="_blank">🧭 智能导览</a>
+      </div>
+    </div>
+  </div>
+
+<div id="viewDiv"></div>
+
+<script>
+// ========== 智谱AI API调用核心代码 ==========
+// 替换为你的智谱API Key（从智谱开放平台获取）
+const ZHIPU_API_KEY = "14cd0b3789fb4c1ca0809d8f5c26c110.rI6aAkNkO30OJOKE";
+const ZHIPU_API_URL = "https://open.bigmodel.cn/api/paas/v4/chat/completions";
+
+// DOM元素
+const chatMessages = document.getElementById('chatMessages');
+const chatInput = document.getElementById('chatInput');
+const sendBtn = document.getElementById('sendBtn');
+
+// 添加消息到聊天窗口
+function addMessage(content, isUser = false) {
+  const messageDiv = document.createElement('div');
+  messageDiv.className = isUser ? 'message user-message' : 'message ai-message';
+  messageDiv.textContent = content;
+  chatMessages.appendChild(messageDiv);
+  // 滚动到底部
+  chatMessages.scrollTop = chatMessages.scrollHeight;
+}
+
+// 发送消息到智谱API
+async function sendMessageToZhipu(message) {
+  try {
+    // 显示加载状态
+    addMessage("正在思考中...", false);
+    sendBtn.disabled = true;
+
+    const response = await fetch(ZHIPU_API_URL, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${ZHIPU_API_KEY}`
+      },
+      body: JSON.stringify({
+        model: "glm-4", // 可选：glm-3-turbo/glm-4
+        messages: [
+          {
+            role: "system",
+            content: "你是一名中国传统民居与历史文化名城的专家，回答要专业、简洁、易懂，重点突出文化和建筑特色。"
+          },
+          {
+            role: "user",
+            content: message
+          }
+        ],
+        temperature: 0.7,
+        max_tokens: 1000
+      })
+    });
+
+    // 移除加载状态
+    chatMessages.removeChild(chatMessages.lastChild);
+
+    if (!response.ok) {
+      throw new Error(`API请求失败: ${response.status}`);
+    }
+
+    const data = await response.json();
+    const answer = data.choices[0].message.content;
+    addMessage(answer, false);
+    
+  } catch (error) {
+    console.error("API调用错误:", error);
+    addMessage("抱歉，获取回答失败，请稍后再试。", false);
+  } finally {
+    sendBtn.disabled = false;
+  }
+}
+
+// 发送按钮点击事件
+sendBtn.addEventListener('click', () => {
+  const message = chatInput.value.trim();
+  if (!message) return;
+  
+  // 添加用户消息
+  addMessage(message, true);
+  chatInput.value = '';
+  
+  // 调用API
+  sendMessageToZhipu(message);
+});
+
+// 回车发送
+chatInput.addEventListener('keypress', (e) => {
+  if (e.key === 'Enter') {
+    sendBtn.click();
+  }
+});
+
+// ========== 地图核心功能 ==========
+AMap.plugin(['AMap.Scale', 'AMap.ToolBar', 'AMap.HeatMap'], function() {
+  const map = new AMap.Map('viewDiv', {
+    zoom: 4.5,
+    center: [104.0, 36.0],
+    resizeEnable: true,
+    mapStyle: 'amap://styles/normal',
+    showLabel: true,
+    layers: [new AMap.TileLayer()]
+  });
+
+  map.addControl(new AMap.Scale());
+  map.addControl(new AMap.ToolBar({ position: 'LB' }));
+
+  // 弹窗元素
+  const popup = document.getElementById("popup");
+  const pointName = document.getElementById("pointName");
+  const pointType = document.getElementById("pointType");
+  const pointProvince = document.getElementById("pointProvince");
+  const pointCity = document.getElementById("pointCity");
+  const pointCoord = document.getElementById("pointCoord");
+  const introText = document.getElementById("introText");
+  const popupImg = document.getElementById("popupImg");
+  const baikeLink = document.getElementById("baikeLink");
+  const closePopup = document.getElementById("closePopup");
+  const tulouSpecialDiv = document.getElementById("tulouSpecialBtns");
+
+  closePopup.onclick = () => { popup.style.display = "none"; };
+
+  // 通用弹窗（土楼按钮显示逻辑：仅承启楼显示三个专属按钮）
+  function showPopup(item) {
+    pointName.innerText = item.name;
+    pointType.innerText = "类型：" + (item.type || "历史文化名城");
+    pointProvince.innerText = "省份：" + (item.province || "—");
+    pointCity.innerText = "城市：" + (item.city || "—");
+    pointCoord.innerText = `经纬度：${item.longitude.toFixed(4)} / ${item.latitude.toFixed(4)}`;
+    introText.innerText = item.intro || "国家级历史文化名城，承载千年文脉。";
+    popupImg.src = item.image || "";
+    popupImg.style.display = item.image ? "block" : "none";
+    baikeLink.href = item.baike || "#";
+    baikeLink.style.display = item.baike ? "inline-block" : "inline-block";
+    
+    // 🏯 核心逻辑：仅当点选的名称为“承启楼”时，显示土楼专属三按钮
+    if (item.name === "承启楼") {
+      tulouSpecialDiv.style.display = "block";
+    } else {
+      tulouSpecialDiv.style.display = "none";
+    }
+    
+    popup.style.display = "block";
+  }
+
+  // 创建通用图标（圆形）
+  function createIcon(color) {
+    const svg = `<svg width="22" height="22" xmlns="http://www.w3.org/2000/svg"><circle cx="11" cy="11" r="9" fill="${color}" stroke="#fff" stroke-width="1.5"/><circle cx="11" cy="11" r="3" fill="#fff" fill-opacity="0.7"/></svg>`;
+    const url = 'data:image/svg+xml;base64,' + btoa(unescape(encodeURIComponent(svg)));
+    return new AMap.Icon({ size: new AMap.Size(22, 22), image: url, imageSize: new AMap.Size(22, 22) });
+  }
+  
+  // 土楼样式图标（专为承启楼设计）
+  function createTulouIcon() {
+    const svg = `<svg width="28" height="28" viewBox="0 0 28 28" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="14" cy="14" r="12" fill="#c23b22" stroke="#e6b422" stroke-width="1.5"/>
+      <path d="M14 4 L14 8 M14 20 L14 24 M4 14 L8 14 M20 14 L24 14" stroke="#f7e5b5" stroke-width="1.2" opacity="0.8"/>
+      <path d="M8 8 L20 20 M20 8 L8 20" stroke="#f7e5b5" stroke-width="1" opacity="0.5"/>
+      <circle cx="14" cy="14" r="3" fill="#2c2418" opacity="0.9"/>
+      <path d="M10 5 L14 2 L18 5" fill="#e6b422" opacity="0.9"/>
+      <rect x="12" y="18" width="4" height="5" fill="#b87c4f" rx="1"/>
+    </svg>`;
+    const url = 'data:image/svg+xml;base64,' + btoa(unescape(encodeURIComponent(svg)));
+    return new AMap.Icon({ size: new AMap.Size(28, 28), image: url, imageSize: new AMap.Size(28, 28) });
+  }
+
+  const blueIcon = createIcon('#2c6e9e');      // 古城蓝色
+  const yellowIcon = createIcon('#e6a017');    // 普通民居暖金色
+  const tulouIcon = createTulouIcon();         // 承启楼专用土楼图标
+
+  // ========== 古城数据 ==========
+  const cityData = [
+    {"name":"江西省南昌","province":"江西省","city":"南昌市","longitude":115.857972,"latitude":28.682976},
+    {"name":"山东省济南","province":"山东省","city":"济南市","longitude":117.120128,"latitude":36.652069},
+    {"name":"河南省安阳","province":"河南省","city":"安阳市","longitude":114.39248,"latitude":36.098779},
+    {"name":"河南省南阳","province":"河南省","city":"南阳市","longitude":112.528549,"latitude":32.990218},
+    {"name":"河南省商丘","province":"河南省","city":"商丘市","longitude":115.656358,"latitude":34.415165},
+    {"name":"湖北省武汉","province":"湖北省","city":"武汉市","longitude":114.304569,"latitude":30.593354},
+    {"name":"湖北省襄樊","province":"湖北省","city":"襄阳市","longitude":114.341552,"latitude":30.546222},
+    {"name":"广东省潮州","province":"广东省","city":"潮州市","longitude":116.621901,"latitude":23.657662},
+    {"name":"重庆市重庆","province":"重庆市","city":"重庆市","longitude":106.550483,"latitude":29.563707},
+    {"name":"四川省阆中","province":"四川省","city":"南充市","longitude":106.005046,"latitude":31.558356},
+    {"name":"江西省景德镇","province":"江西省","city":"景德镇市","longitude":117.184892,"latitude":29.2744},
+    {"name":"四川省宜宾","province":"四川省","city":"宜宾市","longitude":104.642826,"latitude":28.752354},
+    {"name":"四川省自贡","province":"四川省","city":"自贡市","longitude":104.779307,"latitude":29.33924},
+    {"name":"贵州省镇远","province":"贵州省","city":"黔东南苗族侗族自治州","longitude":108.429536,"latitude":27.049033},
+    {"name":"河北省正定","province":"河北省","city":"石家庄市","longitude":114.57043,"latitude":38.14699},
+    {"name":"河北省邯郸","province":"河北省","city":"邯郸市","longitude":114.53915,"latitude":36.625849},
+    {"name":"海南省琼山","province":"海南省","city":"海口市","longitude":110.384318,"latitude":19.984293},
+    {"name":"四川省乐山","province":"四川省","city":"乐山市","longitude":103.766085,"latitude":29.552275},
+    {"name":"四川省都江堰","province":"四川省","city":"成都市","longitude":103.647193,"latitude":30.988763},
+    {"name":"四川省泸州","province":"四川省","city":"泸州市","longitude":105.441866,"latitude":28.87098},
+    {"name":"云南省建水","province":"云南省","city":"红河哈尼族彝族自治州","longitude":102.826178,"latitude":23.635824},
+    {"name":"山东省曲阜","province":"山东省","city":"济宁市","longitude":116.986212,"latitude":35.581933},
+    {"name":"云南省巍山","province":"云南省","city":"大理白族自治州","longitude":100.306977,"latitude":25.227065},
+    {"name":"西藏自治区江孜","province":"西藏自治区","city":"日喀则市","longitude":89.605654,"latitude":28.91186},
+    {"name":"陕西省咸阳","province":"陕西省","city":"咸阳市","longitude":108.708837,"latitude":34.329896},
+    {"name":"陕西省汉中","province":"陕西省","city":"汉中市","longitude":107.02319,"latitude":33.066373},
+    {"name":"甘肃省天水","province":"甘肃省","city":"天水市","longitude":105.724828,"latitude":34.581514},
+    {"name":"青海省同仁","province":"青海省","city":"黄南藏族自治州","longitude":102.018663,"latitude":35.515769},
+    {"name":"山西省新绛","province":"山西省","city":"运城市","longitude":111.224767,"latitude":35.616007},
+    {"name":"山西省代县","province":"山西省","city":"忻州市","longitude":112.960102,"latitude":39.066831},
+    {"name":"山西省祁县","province":"山西省","city":"晋中市","longitude":112.335226,"latitude":37.358425},
+    {"name":"吉林省吉林","province":"吉林省","city":"吉林市","longitude":126.549719,"latitude":43.838132},
+    {"name":"河南省洛阳","province":"河南省","city":"洛阳市","longitude":112.453895,"latitude":34.619702},
+    {"name":"黑龙江省哈尔滨","province":"黑龙江省","city":"哈尔滨市","longitude":126.53505,"latitude":45.802981},
+    {"name":"吉林省集安","province":"吉林省","city":"通化市","longitude":126.193172,"latitude":41.125805},
+    {"name":"浙江省衢州","province":"浙江省","city":"衢州市","longitude":118.859307,"latitude":28.970229},
+    {"name":"浙江省临海","province":"浙江省","city":"台州市","longitude":121.144625,"latitude":28.859042},
+    {"name":"福建省长汀","province":"福建省","city":"龙岩市","longitude":116.357581,"latitude":25.833531},
+    {"name":"江西省赣州","province":"江西省","city":"赣州市","longitude":114.933494,"latitude":25.831139},
+    {"name":"山东省青岛","province":"山东省","city":"青岛市","longitude":120.382665,"latitude":36.066938},
+    {"name":"山东省聊城","province":"山东省","city":"聊城市","longitude":115.985238,"latitude":36.455857},
+    {"name":"山东省邹城","province":"山东省","city":"济宁市","longitude":117.007406,"latitude":35.402536},
+    {"name":"山东省淄博","province":"山东省","city":"淄博市","longitude":118.054994,"latitude":36.813787},
+    {"name":"河南省开封","province":"河南省","city":"开封市","longitude":114.314278,"latitude":34.798083},
+    {"name":"河南省郑州","province":"河南省","city":"郑州市","longitude":113.625351,"latitude":34.746303},
+    {"name":"河南省浚县","province":"河南省","city":"鹤壁市","longitude":114.550611,"latitude":35.677249},
+    {"name":"湖北省随州","province":"湖北省","city":"随州市","longitude":113.382324,"latitude":31.690275},
+    {"name":"湖北省钟祥","province":"湖北省","city":"荆门市","longitude":112.588032,"latitude":31.167933},
+    {"name":"湖南省岳阳","province":"湖南省","city":"岳阳市","longitude":113.128922,"latitude":29.35648},
+    {"name":"广东省肇庆","province":"广东省","city":"肇庆市","longitude":112.465245,"latitude":23.047747},
+    {"name":"广东省佛山","province":"广东省","city":"佛山市","longitude":113.121586,"latitude":23.021351},
+    {"name":"广东省梅州","province":"广东省","city":"梅州市","longitude":116.122046,"latitude":24.288832},
+    {"name":"广东省雷州","province":"广东省","city":"湛江市","longitude":110.097011,"latitude":20.914548},
+    {"name":"广西壮族自治区柳州","province":"广西壮族自治区","city":"柳州市","longitude":109.428071,"latitude":24.326442},
+    {"name":"河北省承德","province":"河北省","city":"承德市","longitude":117.962749,"latitude":40.952942},
+    {"name":"江苏省扬州","province":"江苏省","city":"扬州市","longitude":119.412834,"latitude":32.394404},
+    {"name":"江苏省无锡","province":"江苏省","city":"无锡市","longitude":120.311889,"latitude":31.491064},
+    {"name":"江苏省南通","province":"江苏省","city":"南通市","longitude":120.894522,"latitude":31.981269},
+    {"name":"安徽省安庆","province":"安徽省","city":"安庆市","longitude":117.115349,"latitude":30.531828},
+    {"name":"安徽省绩溪县","province":"安徽省","city":"宣城市","longitude":118.578519,"latitude":30.067533},
+    {"name":"江苏省宜兴","province":"江苏省","city":"无锡市","longitude":119.821873,"latitude":31.338429},
+    {"name":"浙江省金华","province":"浙江省","city":"金华市","longitude":119.647265,"latitude":29.079195},
+    {"name":"浙江省嘉兴","province":"浙江省","city":"嘉兴市","longitude":120.755623,"latitude":30.746814},
+    {"name":"河南省濮阳","province":"河南省","city":"濮阳市","longitude":115.029246,"latitude":35.762731},
+    {"name":"山西省太原","province":"山西省","city":"太原市","longitude":112.549656,"latitude":37.870451},
+    {"name":"江苏省泰州","province":"江苏省","city":"泰州市","longitude":119.922883,"latitude":32.456692},
+    {"name":"浙江省杭州","province":"浙江省","city":"杭州市","longitude":120.210792,"latitude":30.246026},
+    {"name":"山东省泰安","province":"山东省","city":"泰安市","longitude":117.086963,"latitude":36.201784},
+    {"name":"山东省蓬莱","province":"山东省","city":"烟台市","longitude":120.829141,"latitude":37.795697},
+    {"name":"山东省烟台","province":"山东省","city":"烟台市","longitude":121.447755,"latitude":37.464551},
+    {"name":"广东省中山","province":"广东省","city":"中山市","longitude":113.392517,"latitude":22.517024},
+    {"name":"广西壮族自治区北海","province":"广西壮族自治区","city":"北海市","longitude":109.120248,"latitude":21.481305},
+    {"name":"河北省山海关区","province":"河北省","city":"秦皇岛市","longitude":119.775187,"latitude":39.978882},
+    {"name":"湖南省凤凰","province":"湖南省","city":"湘西土家族苗族自治州","longitude":109.580815,"latitude":27.957441},
+    {"name":"海南省海口","province":"海南省","city":"海口市","longitude":110.198418,"latitude":20.045805},
+    {"name":"四川省会理县","province":"四川省","city":"凉山彝族自治州","longitude":102.244774,"latitude":26.655047},
+    {"name":"云南省会泽县","province":"云南省","city":"曲靖市","longitude":103.297155,"latitude":26.417116},
+    {"name":"浙江省绍兴","province":"浙江省","city":"绍兴市","longitude":120.582886,"latitude":30.051549},
+    {"name":"新疆维吾尔自治区吐鲁番","province":"新疆维吾尔自治区","city":"吐鲁番市","longitude":89.190374,"latitude":42.950736},
+    {"name":"新疆维吾尔自治区特克斯县","province":"新疆维吾尔自治区","city":"伊犁哈萨克自治州","longitude":81.835732,"latitude":43.218435},
+    {"name":"新疆维吾尔自治区库车县","province":"新疆维吾尔自治区","city":"阿克苏地区","longitude":82.998544,"latitude":41.719073},
+    {"name":"新疆维吾尔自治区伊宁","province":"新疆维吾尔自治区","city":"伊犁哈萨克自治州","longitude":81.52745,"latitude":43.977119},
+    {"name":"山东省青州","province":"山东省","city":"潍坊市","longitude":118.479637,"latitude":36.685178},
+    {"name":"浙江省湖州","province":"浙江省","city":"湖州市","longitude":120.086881,"latitude":30.894178},
+    {"name":"黑龙江省齐齐哈尔","province":"黑龙江省","city":"齐齐哈尔市","longitude":123.918193,"latitude":47.354892},
+    {"name":"江苏省常州","province":"江苏省","city":"常州市","longitude":119.974092,"latitude":31.811313},
+    {"name":"江西省瑞金","province":"江西省","city":"赣州市","longitude":116.027114,"latitude":25.88623},
+    {"name":"广东省惠州","province":"广东省","city":"惠州市","longitude":114.415587,"latitude":23.112368},
+    {"name":"湖北省江陵","province":"湖北省","city":"荆州市","longitude":112.424581,"latitude":30.042227},
+    {"name":"浙江省温州","province":"浙江省","city":"温州市","longitude":120.699279,"latitude":27.993849},
+    {"name":"江苏省高邮","province":"江苏省","city":"扬州市","longitude":119.45892,"latitude":32.781606},
+    {"name":"河北省蔚县","province":"河北省","city":"张家口市","longitude":114.589136,"latitude":39.840154},
+    {"name":"吉林省长春","province":"吉林省","city":"长春市","longitude":125.323643,"latitude":43.816996},
+    {"name":"浙江省龙泉","province":"浙江省","city":"丽水市","longitude":119.14126,"latitude":28.074916},
+    {"name":"湖南省长沙","province":"湖南省","city":"长沙市","longitude":112.938882,"latitude":28.228304},
+    {"name":"广东省广州","province":"广东省","city":"广州市","longitude":113.264499,"latitude":23.130061},
+    {"name":"广西壮族自治区桂林","province":"广西壮族自治区","city":"桂林市","longitude":110.179752,"latitude":25.235615},
+    {"name":"四川省成都","province":"四川省","city":"成都市","longitude":104.066301,"latitude":30.572961},
+    {"name":"贵州省遵义","province":"贵州省","city":"遵义市","longitude":107.031922,"latitude":27.721931},
+    {"name":"云南省昆明","province":"云南省","city":"昆明市","longitude":102.833669,"latitude":24.88149},
+    {"name":"北京市北京","province":"北京市","city":"北京市","longitude":116.407387,"latitude":39.904179},
+    {"name":"云南省大理","province":"云南省","city":"大理白族自治州","longitude":100.301614,"latitude":25.678466},
+    {"name":"西藏自治区拉萨","province":"西藏自治区","city":"拉萨市","longitude":91.171924,"latitude":29.653491},
+    {"name":"陕西省西安","province":"陕西省","city":"西安市","longitude":108.939645,"latitude":34.343207},
+    {"name":"陕西省延安","province":"陕西省","city":"延安市","longitude":109.49468,"latitude":36.650109},
+    {"name":"江苏省苏州","province":"江苏省","city":"苏州市","longitude":120.585294,"latitude":31.299758},
+    {"name":"天津市天津","province":"天津市","city":"天津市","longitude":117.201509,"latitude":39.085318},
+    {"name":"河北省保定","province":"河北省","city":"保定市","longitude":115.464523,"latitude":38.874476},
+    {"name":"云南省丽江","province":"云南省","city":"丽江市","longitude":100.225936,"latitude":26.855165},
+    {"name":"西藏自治区日喀则","province":"西藏自治区","city":"日喀则市","longitude":88.880423,"latitude":29.266838},
+    {"name":"陕西省韩城","province":"陕西省","city":"渭南市","longitude":110.44295,"latitude":35.477145},
+    {"name":"山西省大同","province":"山西省","city":"大同市","longitude":113.366749,"latitude":40.09711},
+    {"name":"陕西省榆林","province":"陕西省","city":"榆林市","longitude":109.734104,"latitude":38.28576},
+    {"name":"甘肃省张掖","province":"甘肃省","city":"张掖市","longitude":100.449858,"latitude":38.924766},
+    {"name":"甘肃省敦煌","province":"甘肃省","city":"酒泉市","longitude":94.66201,"latitude":40.142141},
+    {"name":"宁夏回族自治区银川","province":"宁夏回族自治区","city":"银川市","longitude":106.230977,"latitude":38.487783},
+    {"name":"新疆维吾尔自治区喀什","province":"新疆维吾尔自治区","city":"喀什地区","longitude":75.989746,"latitude":39.470492},
+    {"name":"甘肃省武威","province":"甘肃省","city":"武威市","longitude":102.637821,"latitude":37.92898},
+    {"name":"内蒙古自治区呼和浩特","province":"内蒙古自治区","city":"呼和浩特市","longitude":111.748814,"latitude":40.842127},
+    {"name":"上海市上海","province":"上海市","city":"上海市","longitude":121.473667,"latitude":31.230525},
+    {"name":"江苏省徐州","province":"江苏省","city":"徐州市","longitude":117.283752,"latitude":34.204224},
+    {"name":"山西省平遥","province":"山西省","city":"晋中市","longitude":112.175825,"latitude":37.189614},
+    {"name":"江苏省南京","province":"江苏省","city":"南京市","longitude":118.796624,"latitude":32.059344},
+    {"name":"辽宁省沈阳","province":"辽宁省","city":"沈阳市","longitude":123.464675,"latitude":41.677576},
+    {"name":"江苏省镇江","province":"江苏省","city":"镇江市","longitude":119.424441,"latitude":32.188141},
+    {"name":"江苏省常熟","province":"江苏省","city":"苏州市","longitude":120.752512,"latitude":31.656016},
+    {"name":"江苏省淮安","province":"江苏省","city":"淮安市","longitude":119.113166,"latitude":33.551495},
+    {"name":"浙江省宁波","province":"浙江省","city":"宁波市","longitude":121.62454,"latitude":29.860258},
+    {"name":"安徽省歙县","province":"安徽省","city":"黄山市","longitude":118.415258,"latitude":29.861354},
+    {"name":"安徽省寿县","province":"安徽省","city":"淮南市","longitude":116.798203,"latitude":32.545027},
+    {"name":"安徽省亳州","province":"安徽省","city":"亳州市","longitude":115.778588,"latitude":33.846285},
+    {"name":"福建省福州","province":"福建省","city":"福州市","longitude":119.296411,"latitude":26.074286},
+    {"name":"福建省漳州","province":"福建省","city":"漳州市","longitude":117.647298,"latitude":24.515297},
+    {"name":"福建省泉州","province":"福建省","city":"泉州市","longitude":118.675724,"latitude":24.874452}
+  ];
+
+  // ========== 传统民居建筑点（承启楼使用土楼图标） ==========
+  const mjData = [
+    {
+      name: "黄山市黟县徽派建筑",
+      province: "安徽省", city: "黄山市",
+      longitude: 117.94, latitude: 29.92,
+      type: "徽派建筑",
+      image: "https://bkimg.cdn.bcebos.com/pic/caef76094b36acaf2edd59e11f8a9a1001e939013628?x-bce-process=image/format,f_auto",
+      intro: "徽派建筑是中国传统建筑最重要的流派之一，以白墙黛瓦、马头墙为特色。",
+      baike: "https://baike.baidu.com/item/%E9%BB%9F%E5%8E%BF/5294317"
+    },
+    {
+      name: "东四胡同",
+      province: "北京市", city: "北京市",
+      longitude: 116.42, latitude: 39.93,
+      type: "北京四合院",
+      image: "https://bkimg.cdn.bcebos.com/pic/faf2b2119313b07eca80d5ad918d862397dda1442659?x-bce-process=image/format,f_auto",
+      intro: "东四胡同是北京老城最具代表性的胡同群落，形成于元代，四合院格局规整。",
+      baike: "https://baike.baidu.com/item/%E4%B8%9C%E5%9B%9B%E8%83%A1%E5%90%8C%E5%8D%9A%E7%89%A9%E9%A6%86/22942858"
+    },
+    {
+      name: "承启楼",
+      province: "福建省", city: "龙岩市",
+      longitude: 116.8105, latitude: 24.6523,
+      type: "福建土楼",
+      image: "https://gd-hbimg.huaban.com/d55a5a53f673f037a3e1f0672f6bfb6d86290be69cd39-PGS1N2_fw658",
+      intro: "承启楼是福建土楼中规模最大、气势最宏伟的一座，被誉为“土楼王”。圆形土楼典范。",
+      baike: "https://baike.baidu.com/item/%E6%89%BF%E5%90%AF%E6%A5%BC/5944427",
+      customIcon: true
+    },
+    {
+      name: "莫尔格勒河畔蒙古包",
+      province: "内蒙古自治区", city: "呼伦贝尔市",
+      longitude: 119.71, latitude: 49.46,
+      type: "蒙古包",
+      image: "https://bkimg.cdn.bcebos.com/pic/4610b912c8fcc3ce6538eb739f45d688d53f20f1?x-bce-process=image/format,f_auto",
+      intro: "蒙古包是蒙古族传统民居，搭建拆卸便捷、保暖防风，适合草原游牧生活。",
+      baike: "https://baike.baidu.com/item/%E8%92%99%E5%8F%A4%E5%8C%85/467676"
+    },
+    {
+      name: "山西李家山村窑洞",
+      province: "山西省", city: "吕梁市",
+      longitude: 110.78, latitude: 37.63,
+      type: "窑洞",
+      image: "https://bkimg.cdn.bcebos.com/pic/f9dcd100baa1cd11cb374d79bb12c8fcc2ce2de1?x-bce-process=image/format,f_auto",
+      intro: "窑洞是黄土高原最典型的民居形式，依山开凿、冬暖夏凉。",
+      baike: "https://baike.baidu.com/item/%E5%B1%B1%E8%A5%BF%E7%AA%91%E6%B4%9E/3135117"
+    },
+    {
+      name: "湖南吊脚楼凤凰古城",
+      province: "湖南省", city: "湘西土家族苗族自治州",
+      longitude: 109.61, latitude: 27.95,
+      type: "吊脚楼",
+      image: "https://bkimg.cdn.bcebos.com/pic/34fae6cd7b899e510fb3a4b963fece33c895d143a75f?x-bce-process=image/format,f_auto",
+      intro: "吊脚楼是湘西苗族、土家族传统建筑，依山傍水而建，半悬空结构通风防潮。",
+      baike: "https://baike.baidu.com/item/%E5%90%8A%E8%84%9A%E6%A5%BC/1787693"
+    }
+  ];
+
+  // 添加标记（根据是否 customIcon 选择图标）
+  function addMarkersWithIcon(data, defaultIcon, tulouIcon) {
+    data.forEach(item => {
+      let iconToUse = defaultIcon;
+      if (item.customIcon && item.name === "承启楼") {
+        iconToUse = tulouIcon;
+      }
+      const marker = new AMap.Marker({
+        position: [item.longitude, item.latitude],
+        icon: iconToUse,
+        zIndex: 10,
+        title: item.name
+      });
+      marker.on('click', () => showPopup(item));
+      marker.setMap(map);
+    });
+  }
+
+  // 核密度热力图（基于古城数据）
+  function addHeatmap(data) {
+    const heatData = data.map(p => ({
+      lng: p.longitude,
+      lat: p.latitude,
+      count: 1
+    }));
+    const heatmap = new AMap.HeatMap(map, {
+      radius: 48,
+      opacity: [0.2, 0.85],
+      gradient: { 0.2: '#2c7bb6', 0.4: '#abd9e9', 0.6: '#fdae61', 0.8: '#d7191c', 1.0: '#a50026' },
+      zIndex: 100
+    });
+    heatmap.setDataSet({ data: heatData, max: 9 });
+    heatmap.show();
+  }
+
+  // 开始渲染
+  addMarkersWithIcon(cityData, blueIcon, tulouIcon);
+  addMarkersWithIcon(mjData, yellowIcon, tulouIcon);
+  addHeatmap(cityData);
+});
+</script>
+</body>
+</html>
