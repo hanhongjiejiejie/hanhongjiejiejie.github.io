@@ -2,7 +2,7 @@
 <html lang="zh-CN">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>历史文化名城 - 核密度分析 | 土楼图谱 & 智能导览</title>
   
   <!-- 高德地图 JS API 2.0 + 热力图插件 -->
@@ -12,13 +12,13 @@
     * { margin: 0; padding: 0; box-sizing: border-box; }
     html, body { width: 100%; height: 100%;  font-family: 'Georgia', '宋体', 'KaiTi', '华文楷书', 'Microsoft YaHei', serif; }
 
-    /* ========= 国风顶部横栏：庄严棕色 + 朱砂红 + 暖金，完全平铺 ========= */
+    /* ========= 国风顶部横栏：移动端适配 ========= */
     .top-bar {
       position: fixed;
       top: 0;
       left: 0;
       width: 100%;
-      height: 70px;
+      height: 60px; /* 移动端降低高度 */
       background: #4a2c1a;
       backdrop-filter: blur(4px);
       background-image: radial-gradient(circle at 20% 40%, rgba(255, 215, 140, 0.08) 2%, transparent 2.5%),
@@ -28,32 +28,36 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 0 30px;
+      padding: 0 15px; /* 移动端减少内边距 */
       z-index: 9999;
       border-bottom: 2px solid #c23b22;
     }
 
     .top-bar .title {
-      font-size: 22px;
+      font-size: 16px; /* 移动端缩小字体 */
       font-weight: bold;
       background: linear-gradient(135deg, #f7e5b5, #e6b422);
       -webkit-background-clip: text;
       background-clip: text;
       color: transparent;
-      letter-spacing: 2px;
+      letter-spacing: 1px; /* 移动端减少字间距 */
       text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+      white-space: nowrap; /* 防止标题换行 */
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 50%; /* 移动端限制标题宽度 */
     }
 
     .nav-btn {
-      padding: 8px 22px;
-      margin-left: 12px;
+      padding: 6px 12px; /* 移动端缩小按钮内边距 */
+      margin-left: 8px; /* 移动端减少间距 */
       border: none;
       border-radius: 40px;
       background: rgba(245, 235, 210, 0.2);
       color: #f7e5c2;
       cursor: pointer;
       font-family: inherit;
-      font-size: 15px;
+      font-size: 13px; /* 移动端缩小字体 */
       transition: 0.25s;
       backdrop-filter: blur(4px);
       border: 1px solid #e6b422;
@@ -75,91 +79,92 @@
       transform: translateY(-2px);
     }
 
-    /* 地图容器 */
+    /* 地图容器：移动端适配 */
     #viewDiv { 
       width: 100%; 
-      height: calc(100% - 70px);
-      margin-top: 70px; 
+      height: calc(100% - 60px); /* 适配顶部栏高度变化 */
+      margin-top: 60px; 
     }
 
-    /* 右侧全屏侧边栏弹窗 */
+    /* 右侧全屏侧边栏弹窗：移动端适配 */
     #popup {
       position: fixed;
-      top: 70px;
+      top: 60px;
       right: 0;
-      width: 380px;
-      height: calc(100% - 70px);
+      width: 100%; /* 移动端全屏显示 */
+      max-width: 380px; /* 最大宽度限制 */
+      height: calc(100% - 60px);
       background: #fdf6ec;
       border-left: 3px solid #c49368;
       box-shadow: -2px 0 15px rgba(0,0,0,0.2);
-      padding: 25px;
+      padding: 15px; /* 移动端减少内边距 */
       display: none;
       z-index: 999;
       overflow-y: auto;
     }
     #closePopup {
-      font-size: 22px;
+      font-size: 20px; /* 移动端调整大小 */
       color: #6d4c41;
       cursor: pointer;
       float: right;
-      margin-top: -10px;
+      margin-top: -5px;
     }
     #popupImg {
       width: 100%;
-      height: 220px;
+      height: 180px; /* 移动端降低图片高度 */
       object-fit: cover;
       border-radius: 8px;
-      margin: 15px 0;
+      margin: 10px 0;
       border: 2px solid #d7b28a;
     }
     #pointName {
-      font-size: 20px;
+      font-size: 18px; /* 移动端缩小字体 */
       font-weight: bold;
       color: #6d4c41;
-      margin-bottom: 8px;
+      margin-bottom: 6px;
     }
     #popup p {
-      font-size: 15px;
+      font-size: 14px; /* 移动端缩小字体 */
       color: #553c37;
-      line-height: 1.7;
-      margin: 6px 0;
+      line-height: 1.6; /* 移动端调整行高 */
+      margin: 4px 0;
     }
     #introText {
       background: #f6eedf;
-      padding: 12px;
+      padding: 10px; /* 移动端减少内边距 */
       border-radius: 6px;
       border-left: 4px solid #c49368;
-      margin: 12px 0;
+      margin: 10px 0;
     }
     #baikeLink {
       display: inline-block;
-      margin-top: 10px;
-      padding: 8px 16px;
+      margin-top: 8px;
+      padding: 6px 14px; /* 移动端缩小按钮 */
       background: #c49368;
       color: #fff !important;
       border-radius: 6px;
       text-decoration: none;
-      font-size: 14px;
+      font-size: 13px; /* 移动端缩小字体 */
     }
 
-    /* 土楼专用三按钮样式 (支持换行) */
+    /* 土楼专用三按钮样式：移动端适配 */
     .tulou-buttons-container {
-      margin-top: 18px;
+      margin-top: 15px;
       display: flex;
       flex-wrap: wrap;
-      gap: 12px;
+      gap: 8px; /* 移动端减少间距 */
       justify-content: space-between;
     }
     .tulou-custom-btn {
       flex: 1;
-      min-width: 90px;
+      min-width: 80px; /* 移动端缩小最小宽度 */
       text-align: center;
-      padding: 10px 0;
+      padding: 8px 0; /* 移动端缩小按钮 */
       background: #9b6a48;
       color: white;
       border: none;
       border-radius: 40px;
-      font-size: 14px;
+      font-size: 13px; /* 移动端缩小字体 */
       font-weight: bold;
       cursor: pointer;
       text-decoration: none;
@@ -172,47 +177,72 @@
       transform: translateY(-1px);
     }
 
-    /* ========== 左侧悬浮智谱AI搜索框（自定义样式） ========== */
+    /* ========== 左侧悬浮智谱AI搜索框：移动端适配 ========== */
     #aiPanel {
       position: fixed;
-      left: 20px;
-      top: 100px;
-      width: 320px;
+      left: 10px; /* 移动端减少左边距 */
+      top: 80px; /* 移动端调整顶部距离 */
+      width: calc(100% - 20px); /* 移动端自适应宽度 */
+      max-width: 320px; /* 最大宽度限制 */
       background: #fdf6ec;
       border: 2px solid #c49368;
       border-radius: 10px;
-      padding: 18px;
+      padding: 15px; /* 移动端减少内边距 */
       box-shadow: 0 3px 15px rgba(0,0,0,0.2);
       z-index: 888;
+      /* 移动端默认隐藏AI面板，添加展开按钮 */
+      transform: translateX(-100%);
+      transition: transform 0.3s ease;
+    }
+    /* 移动端AI面板展开按钮 */
+    #aiPanelToggle {
+      position: fixed;
+      left: 10px;
+      top: 80px;
+      width: 40px;
+      height: 40px;
+      background: #c49368;
+      border-radius: 50%;
+      color: white;
+      text-align: center;
+      line-height: 40px;
+      font-size: 20px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+      z-index: 889;
+      cursor: pointer;
+    }
+    #aiPanel.show {
+      transform: translateX(0);
     }
     #aiPanel h3 {
       color: #6d4c41;
-      margin-bottom: 12px;
-      font-size: 16px;
+      margin-bottom: 10px;
+      font-size: 15px; /* 移动端缩小字体 */
     }
-    /* AI问答区域样式 */
+    /* AI问答区域样式：移动端适配 */
     #chatContainer {
       width: 100%;
-      height: 240px;
+      height: 320px; /* 扩大高度，适配移除时间轴后的空间 */
       display: flex;
       flex-direction: column;
       border: 1px solid #d7b28a;
       border-radius: 6px;
       overflow: hidden;
-      margin-bottom: 15px; /* 增加底部间距，分隔AI和时间轴 */
+      margin-bottom: 12px;
     }
     #chatMessages {
       flex: 1;
-      padding: 10px;
+      padding: 8px; /* 移动端减少内边距 */
       overflow-y: auto;
       background: #fff;
     }
     .message {
-      margin-bottom: 10px;
-      padding: 8px;
+      margin-bottom: 8px; /* 移动端减少间距 */
+      padding: 6px; /* 移动端减少内边距 */
       border-radius: 6px;
       max-width: 90%;
-      line-height: 1.5;
+      line-height: 1.4; /* 移动端调整行高 */
+      font-size: 14px; /* 移动端缩小字体 */
     }
     .user-message {
       background: #e8d8c0;
@@ -230,22 +260,22 @@
     }
     #chatInput {
       flex: 1;
-      padding: 8px 10px;
+      padding: 6px 8px; /* 移动端减少内边距 */
       border: none;
       outline: none;
       font-family: inherit;
-      font-size: 14px;
+      font-size: 13px; /* 移动端缩小字体 */
       background: #fdf6ec;
       color: #6d4c41;
     }
     #sendBtn {
-      padding: 8px 15px;
+      padding: 6px 12px; /* 移动端缩小按钮 */
       border: none;
       background: #c49368;
       color: white;
       cursor: pointer;
       font-family: inherit;
-      font-size: 14px;
+      font-size: 13px; /* 移动端缩小字体 */
       transition: 0.2s;
     }
     #sendBtn:hover {
@@ -259,29 +289,56 @@
       color: #9b6a48;
       font-style: italic;
       text-align: center;
-      padding: 5px;
+      padding: 4px;
+      font-size: 13px;
     }
 
-    /* ========== 新增：朝代时间轴嵌入窗口样式 ========== */
-    #timeAxisContainer {
-      width: 100%;
-      height: 280px; /* 可根据需要调整高度 */
-      border: 1px solid #d7b28a;
-      border-radius: 6px;
-      overflow: hidden;
-      background: #fff;
+    /* ========== 响应式媒体查询：针对不同屏幕尺寸优化 ========== */
+    @media screen and (max-width: 768px) {
+      /* 平板及手机端样式 */
+      .top-bar .title {
+        font-size: 14px;
+        max-width: 40%;
+      }
+      .nav-btn {
+        padding: 5px 10px;
+        font-size: 12px;
+        margin-left: 5px;
+      }
+      #popup {
+        max-width: 100%; /* 平板端全屏 */
+      }
+      #aiPanel {
+        top: 70px;
+      }
+      #aiPanelToggle {
+        top: 70px;
+      }
     }
-    #timeAxisIframe {
-      width: 100%;
-      height: 100%;
-      border: none;
-    }
-    #timeAxisTitle {
-      font-size: 15px;
-      color: #6d4c41;
-      margin-bottom: 8px;
-      font-weight: bold;
-      display: block;
+
+    @media screen and (max-width: 480px) {
+      /* 手机端极致适配 */
+      .top-bar {
+        height: 50px;
+      }
+      #viewDiv {
+        height: calc(100% - 50px);
+        margin-top: 50px;
+      }
+      #popup {
+        top: 50px;
+        height: calc(100% - 50px);
+        padding: 10px;
+      }
+      #popupImg {
+        height: 150px;
+      }
+      #chatContainer {
+        height: 280px;
+      }
+      .message {
+        font-size: 13px;
+      }
     }
   </style>
 </head>
@@ -297,6 +354,9 @@
     </div>
   </div>
 
+  <!-- 移动端AI面板展开按钮 -->
+  <div id="aiPanelToggle">🤖</div>
+  
   <!-- 左侧悬浮智谱AI面板（API调用版） -->
   <div id="aiPanel">
     <h3>🏺 智谱AI · 民居知识智能问答</h3>
@@ -309,12 +369,6 @@
         <input type="text" id="chatInput" placeholder="输入你的问题，比如：福建土楼的特点？">
         <button id="sendBtn">发送</button>
       </div>
-    </div>
-
-    <!-- 新增：朝代时间轴嵌入窗口 -->
-    <span id="timeAxisTitle">📜 中国历史文化名城朝代时间轴</span>
-    <div id="timeAxisContainer">
-      <iframe id="timeAxisIframe" src="time-axis.html"></iframe>
     </div>
   </div>
 
@@ -343,6 +397,16 @@
 <div id="viewDiv"></div>
 
 <script>
+// ========== 移动端AI面板展开/收起逻辑 ==========
+const aiPanel = document.getElementById('aiPanel');
+const aiPanelToggle = document.getElementById('aiPanelToggle');
+
+aiPanelToggle.addEventListener('click', () => {
+  aiPanel.classList.toggle('show');
+  // 切换按钮图标
+  aiPanelToggle.textContent = aiPanel.classList.contains('show') ? '✕' : '🤖';
+});
+
 // ========== 智谱AI API调用核心代码 ==========
 // 替换为你的智谱API Key（从智谱开放平台获取）
 const ZHIPU_API_KEY = "14cd0b3789fb4c1ca0809d8f5c26c110.rI6aAkNkO30OJOKE";
@@ -432,19 +496,36 @@ chatInput.addEventListener('keypress', (e) => {
   }
 });
 
-// ========== 地图核心功能 ==========
+// ========== 地图核心功能：移动端适配 ==========
 AMap.plugin(['AMap.Scale', 'AMap.ToolBar', 'AMap.HeatMap'], function() {
+  // 移动端自适应地图中心点和缩放级别
+  const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+  const mapZoom = isMobile ? 3.5 : 4.5; // 移动端降低初始缩放级别
+  const mapCenter = isMobile ? [104.0, 35.0] : [104.0, 36.0]; // 移动端微调中心点
+
   const map = new AMap.Map('viewDiv', {
-    zoom: 4.5,
-    center: [104.0, 36.0],
+    zoom: mapZoom,
+    center: mapCenter,
     resizeEnable: true,
     mapStyle: 'amap://styles/normal',
     showLabel: true,
-    layers: [new AMap.TileLayer()]
+    layers: [new AMap.TileLayer()],
+    // 移动端禁用地图旋转和倾斜
+    rotateEnable: !isMobile,
+    pitchEnable: !isMobile,
+    // 移动端调整手势交互
+    touchZoomCenter: 1,
+    zoomEnable: true,
+    dragEnable: true
   });
 
   map.addControl(new AMap.Scale());
-  map.addControl(new AMap.ToolBar({ position: 'LB' }));
+  // 移动端调整工具条位置和显示
+  map.addControl(new AMap.ToolBar({ 
+    position: 'LB',
+    liteStyle: isMobile, // 移动端使用精简版工具条
+    zoomButtons: isMobile // 移动端显示缩放按钮
+  }));
 
   // 弹窗元素
   const popup = document.getElementById("popup");
@@ -484,25 +565,27 @@ AMap.plugin(['AMap.Scale', 'AMap.ToolBar', 'AMap.HeatMap'], function() {
     popup.style.display = "block";
   }
 
-  // 创建通用图标（圆形）
+  // 创建通用图标（圆形）：移动端调整大小
   function createIcon(color) {
-    const svg = `<svg width="22" height="22" xmlns="http://www.w3.org/2000/svg"><circle cx="11" cy="11" r="9" fill="${color}" stroke="#fff" stroke-width="1.5"/><circle cx="11" cy="11" r="3" fill="#fff" fill-opacity="0.7"/></svg>`;
+    const iconSize = isMobile ? 18 : 22; // 移动端缩小图标
+    const svg = `<svg width="${iconSize}" height="${iconSize}" xmlns="http://www.w3.org/2000/svg"><circle cx="${iconSize/2}" cy="${iconSize/2}" r="${iconSize/2 - 1}" fill="${color}" stroke="#fff" stroke-width="1.5"/><circle cx="${iconSize/2}" cy="${iconSize/2}" r="${iconSize/7}" fill="#fff" fill-opacity="0.7"/></svg>`;
     const url = 'data:image/svg+xml;base64,' + btoa(unescape(encodeURIComponent(svg)));
-    return new AMap.Icon({ size: new AMap.Size(22, 22), image: url, imageSize: new AMap.Size(22, 22) });
+    return new AMap.Icon({ size: new AMap.Size(iconSize, iconSize), image: url, imageSize: new AMap.Size(iconSize, iconSize) });
   }
   
-  // 土楼样式图标（专为承启楼设计）
+  // 土楼样式图标（专为承启楼设计）：移动端调整大小
   function createTulouIcon() {
-    const svg = `<svg width="28" height="28" viewBox="0 0 28 28" xmlns="http://www.w3.org/2000/svg">
-      <circle cx="14" cy="14" r="12" fill="#c23b22" stroke="#e6b422" stroke-width="1.5"/>
-      <path d="M14 4 L14 8 M14 20 L14 24 M4 14 L8 14 M20 14 L24 14" stroke="#f7e5b5" stroke-width="1.2" opacity="0.8"/>
-      <path d="M8 8 L20 20 M20 8 L8 20" stroke="#f7e5b5" stroke-width="1" opacity="0.5"/>
-      <circle cx="14" cy="14" r="3" fill="#2c2418" opacity="0.9"/>
-      <path d="M10 5 L14 2 L18 5" fill="#e6b422" opacity="0.9"/>
-      <rect x="12" y="18" width="4" height="5" fill="#b87c4f" rx="1"/>
+    const iconSize = isMobile ? 24 : 28; // 移动端缩小图标
+    const svg = `<svg width="${iconSize}" height="${iconSize}" viewBox="0 0 ${iconSize} ${iconSize}" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="${iconSize/2}" cy="${iconSize/2}" r="${iconSize/2 - 1}" fill="#c23b22" stroke="#e6b422" stroke-width="1.5"/>
+      <path d="M${iconSize/2} ${iconSize/7} L${iconSize/2} ${iconSize/3.5} M${iconSize/2} ${iconSize*5/7} L${iconSize/2} ${iconSize*6/7} M${iconSize/7} ${iconSize/2} L${iconSize/3.5} ${iconSize/2} M${iconSize*5/7} ${iconSize/2} L${iconSize*6/7} ${iconSize/2}" stroke="#f7e5b5" stroke-width="1.2" opacity="0.8"/>
+      <path d="M${iconSize/3.5} ${iconSize/3.5} L${iconSize*5/7} ${iconSize*5/7} M${iconSize*5/7} ${iconSize/3.5} L${iconSize/3.5} ${iconSize*5/7}" stroke="#f7e5b5" stroke-width="1" opacity="0.5"/>
+      <circle cx="${iconSize/2}" cy="${iconSize/2}" r="${iconSize/7}" fill="#2c2418" opacity="0.9"/>
+      <path d="M${iconSize*3/7} ${iconSize/6} L${iconSize/2} ${iconSize/14} L${iconSize*5/7} ${iconSize/6}" fill="#e6b422" opacity="0.9"/>
+      <rect x="${iconSize*5/14}" y="${iconSize*9/14}" width="${iconSize/7}" height="${iconSize/5}" fill="#b87c4f" rx="1"/>
     </svg>`;
     const url = 'data:image/svg+xml;base64,' + btoa(unescape(encodeURIComponent(svg)));
-    return new AMap.Icon({ size: new AMap.Size(28, 28), image: url, imageSize: new AMap.Size(28, 28) });
+    return new AMap.Icon({ size: new AMap.Size(iconSize, iconSize), image: url, imageSize: new AMap.Size(iconSize, iconSize) });
   }
 
   const blueIcon = createIcon('#2c6e9e');      // 古城蓝色
@@ -665,7 +748,7 @@ AMap.plugin(['AMap.Scale', 'AMap.ToolBar', 'AMap.HeatMap'], function() {
       type: "北京四合院",
       image: "https://bkimg.cdn.bcebos.com/pic/faf2b2119313b07eca80d5ad918d862397dda1442659?x-bce-process=image/format,f_auto",
       intro: "东四胡同是北京老城最具代表性的胡同群落，形成于元代，四合院格局规整。",
-      baike: "https://baike.baidu.com/item/%E4%B8%9C%E5%9B%9B%E8%83%A1%E5%90%8C%E5%8D%9A%E7%89%A9%E9%A6%86/22942858"
+      baike: "https://baike.baidu.com/item/%E4%B8%9C%E5%9B%9B%E8%83%A1%E5%90%8C%E5%8D%9A%E7%89%A1%E9%A6%86/22942858"
     },
     {
       name: "承启楼",
@@ -724,7 +807,7 @@ AMap.plugin(['AMap.Scale', 'AMap.ToolBar', 'AMap.HeatMap'], function() {
     });
   }
 
-  // 核密度热力图（基于古城数据）
+  // 核密度热力图（基于古城数据）：移动端调整参数
   function addHeatmap(data) {
     const heatData = data.map(p => ({
       lng: p.longitude,
@@ -732,7 +815,7 @@ AMap.plugin(['AMap.Scale', 'AMap.ToolBar', 'AMap.HeatMap'], function() {
       count: 1
     }));
     const heatmap = new AMap.HeatMap(map, {
-      radius: 48,
+      radius: isMobile ? 35 : 48, // 移动端缩小热力图半径
       opacity: [0.2, 0.85],
       gradient: { 0.2: '#2c7bb6', 0.4: '#abd9e9', 0.6: '#fdae61', 0.8: '#d7191c', 1.0: '#a50026' },
       zIndex: 100
@@ -740,6 +823,11 @@ AMap.plugin(['AMap.Scale', 'AMap.ToolBar', 'AMap.HeatMap'], function() {
     heatmap.setDataSet({ data: heatData, max: 9 });
     heatmap.show();
   }
+
+  // 监听窗口大小变化，自适应地图
+  window.addEventListener('resize', () => {
+    map.resize();
+  });
 
   // 开始渲染
   addMarkersWithIcon(cityData, blueIcon, tulouIcon);
